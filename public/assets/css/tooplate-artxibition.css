@@ -677,16 +677,26 @@ banner
 
 .main-banner h6 {
   font-size: 14px;
-  color: #fff;
+  color: #000000c9;
   font-weight: 300;
 }
 
 .main-banner h2 {
   font-size: 50px;
   font-weight: 800;
-  color: #fff;
+  color: #000000;
   margin-top: 20px;
   margin-bottom: 30px;
+}
+
+.main-banner h2.description {
+  font-family: cursive;
+}
+
+.main-banner h2.tag {
+  font-family: monospace;
+  font-style: italic;
+  font-size: 3rem;
 }
 
 .main-banner .next-show {
@@ -728,6 +738,14 @@ banner
   text-transform: capitalize;
   color: #000;
   min-width: 15%;
+}
+
+@media screen and (max-width: 600px) {
+  .main-banner .counter-content li span {
+    font-size: 30px !important;
+    position: relative;
+    top: 10px;
+  }
 }
 
 .main-banner .counter-content li span {
