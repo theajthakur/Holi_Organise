@@ -31,16 +31,18 @@
       let now = new Date().getTime(),
         distance = countDown - now;
 
-      (document.getElementById("days").innerText = Math.floor(distance / day)),
-        (document.getElementById("hours").innerText = Math.floor(
-          (distance % day) / hour
-        )),
-        (document.getElementById("minutes").innerText = Math.floor(
-          (distance % hour) / minute
-        )),
-        (document.getElementById("seconds").innerText = Math.floor(
-          (distance % minute) / second
-        ));
+      document.getElementById("days").innerText = String(
+        Math.floor(distance / day)
+      ).padStart(2, "0");
+      document.getElementById("hours").innerText = String(
+        Math.floor((distance % day) / hour)
+      ).padStart(2, "0");
+      document.getElementById("minutes").innerText = String(
+        Math.floor((distance % hour) / minute)
+      ).padStart(2, "0");
+      document.getElementById("seconds").innerText = String(
+        Math.floor((distance % minute) / second)
+      ).padStart(2, "0");
 
       //do something later when date is reached
       //if (distance < 0) {
