@@ -701,8 +701,9 @@ banner
 
 .main-banner .next-show {
   position: absolute;
-  top: -165px;
-  left: 50%;
+  width: 100%;
+  left: 0;
+  top: -50%;
   transform: translateX(-50%);
   animation: move-up-down 3s infinite;
 }
