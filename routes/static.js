@@ -38,4 +38,8 @@ router.get("/contact-us", (req, res) => {
   res.render("pages/contact-us");
 });
 
+router.get("/orders", (req, res) => {
+  res.render("Orders");
+});
+
 module.exports = router;

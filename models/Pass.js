@@ -17,22 +17,20 @@ const PassSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  gender: {
+    type: String,
+    enum: ["Male", "Female"],
+    required: true,
+    default: "Male",
+  },
   packageName: {
     type: String,
-    enum: ["Individual", "Couple", "Group"],
+    enum: ["individual", "couple", "group"],
     required: true,
-  },
-  transactionID: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  payStatus: {
-    type: String,
-    default: "none",
+    default: "Individual",
   },
   referrer: {
-    type: String, // Stores the referral code
+    type: String,
     default: null,
   },
   leader: {

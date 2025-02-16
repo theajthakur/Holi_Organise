@@ -48,6 +48,10 @@
                   Gautama Budhha Nagar, Uttar Pradesh
                 </p>
               </div>
+              <div class="mt-5 all-tickets p-2">
+                <h2 class="pb-2 border-bottom">TICKETS</h2>
+                <div class="ticket-container mt-3"></div>
+              </div>
             </div>
             <div class="col-lg-8">
               <div class="ticket-form">
@@ -157,8 +161,14 @@
                         </tr>
                       </thead>
                     </table>
-                    <div class="form-unit col-lg-8">
+                    <div
+                      class="form-unit animate__animated animate__backInRight col-lg-8"
+                    >
                       <div class="row variable_form">
+                        <div class="col-12">
+                          <h2 class="text-center">Pass Details</h2>
+                          <h6 class="person_count"></h6>
+                        </div>
                         <div class="col-md-12 my-1">
                           <label for="name" class="form-label">Name:*</label>
                           <input
@@ -266,54 +276,7 @@
       </div>
     </div>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script>
-      document
-        .getElementById("payButton")
-        .addEventListener("click", async function () {
-          const response = await fetch("/payment/create-order", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: 1 }),
-          });
 
-          const order = await response.json();
-          var options = {
-            key: "rzp_live_n5r0eMfuX4obUf", // Replace with your Razorpay Key ID
-            amount: order.amount, // Amount in paise
-            currency: "INR",
-            name: "Rang Tarang",
-            description: "Holi Party Ticket",
-            order_id: order.id,
-            handler: async function (response) {
-              console.log(response);
-              // Step 3: Send payment details to server for verification
-              const verifyRes = await fetch("/payment/verify-payment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(response),
-              });
-
-              const result = await verifyRes.json();
-              if (result.success) {
-                alert("Payment Successful!");
-              } else {
-                alert("Payment Failed!");
-              }
-            },
-            prefill: {
-              name: "Test User",
-              email: "test@example.com",
-              contact: "9999999999",
-            },
-            theme: {
-              color: "#3399cc",
-            },
-          };
-
-          var rzp = new Razorpay(options);
-          rzp.open();
-        });
-    </script>
     <style>
       body {
         background: url(assets/images/banner_bg.jpg) fixed;
@@ -393,12 +356,75 @@
         margin-left: 10px;
         font-size: 10px;
       }
+
+      .ticket-unit {
+        background: black;
+        color: white;
+        position: relative;
+        padding: 20px;
+        margin: 10px 0;
+        box-shadow: 2px 2px 0 0 #00000042;
+      }
+
+      .ticket-unit:before {
+        position: absolute;
+        content: "";
+        background: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        left: -15px;
+        top: calc(50% - 15px);
+      }
+
+      .ticket-unit:after {
+        position: absolute;
+        content: "";
+        background: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        right: -15px;
+        top: calc(50% - 15px);
+      }
+
+      .ticket-unit .ticket-header h3 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-bottom: 10px;
+        border-bottom: 1px dashed white;
+        font-size: 1.2rem;
+      }
+
+      .ticket-unit .ticket-body h4 {
+        font-size: 0.8rem;
+        font-weight: 400;
+        padding-left: 10px;
+      }
     </style>
 
     <script src="assets/js/jquery-2.1.0.min.js"></script>
     <script>
       let currentForm = 1;
+      let tgt;
       const userData = [];
+      const renderTicketList = () => {
+        $(".ticket-container").empty();
+        userData.forEach((ticket) => {
+          $(".ticket-container").append(`<div class="ticket-unit">
+            <div class="ticket-interior">
+                      <div class="ticket-header">
+                        <h3>${ticket.name.toUpperCase()}</h3>
+                      </div>
+                      <div class="ticket-body">
+                        <h4>${ticket.age}, ${ticket.gender}</h4>
+                        <h4>${ticket.college}</h4>
+                      </div>
+                    </div>
+                  </div>`);
+        });
+      };
       function captchaChecked() {
         $(".sbmtbtn").fadeIn();
       }
@@ -412,30 +438,63 @@
         });
       }
       function renderForm(unit) {
+        $(".person_count").html(
+          `<b>Pass</b>: <span id='cccount'>${currentForm}</span>/${unit}`
+        );
+        if (currentForm > unit) {
+          $(".person_count").remove();
+        }
         $(".nextbtn").click(() => {
-          const name = $(".name").val();
-          const mobile = $(".mobile").val();
-          const age = $(".age").val();
-          const college = $(".college").val();
+          const name = $("#name").val();
+          const mobile = $("#mobile").val();
+          const age = $("#age").val();
+          const college = $("#college").val();
+          const gender = $("input[name='gender']:checked").val();
+          if (!name || !mobile || !age || !college || !gender) {
+            alert("All fields are required!");
+            return false;
+          }
+          $("#name").val("");
+          $("#mobile").val("");
+          $("#age").val("");
+          $("#college").val("");
+          $("input[name='gender']").prop("checked", false);
+
+          const tmp = {};
+          tmp.name = name;
+          tmp.mobileNumber = mobile;
+          tmp.age = age;
+          tmp.college = college;
+          tmp.gender = gender;
+          tmp.packageName = tgt;
+
+          userData.push(tmp);
+
+          renderTicketList();
           if (currentForm++ == unit) {
             showFinalSubmit();
           } else {
-            const name = "";
+            $(".form-unit").hide();
+            setTimeout(() => {
+              $(".form-unit").show();
+            }, 100);
           }
+          $("#cccount").text(currentForm);
         });
       }
       $(document).ready(() => {
+        let currentPage = 1;
+        let packagePrice = 499;
+
         const showPage = (currentPage) => {
           const clsPfx = ".ticket-form .internal-container.package-choose";
           $(`${clsPfx}`).hide();
           $(`${clsPfx}.c${currentPage}`).show();
         };
-        let currentPage = 1;
-        let packagePrice = 499;
         showPage(currentPage);
 
         $(".package-choose.c1 button.tbtn").click(function () {
-          const tgt = $(this).data("id");
+          tgt = $(this).data("id");
           switch (tgt) {
             case "individual":
               packagePrice = 499;
@@ -443,7 +502,7 @@
               break;
 
             case "couple":
-              packagePrice = 849;
+              packagePrice = 899;
               renderForm(2);
               break;
 
@@ -458,8 +517,73 @@
               break;
           }
 
+          $("#ttlcsttkt").val(packagePrice);
+
           $(".myplan").text(`${tgt} - ₹${packagePrice}`);
           showPage(++currentPage);
+        });
+
+        $(".sbmtbtn").click(async () => {
+          if (userData.length == 0) {
+            alert("No Cart in Ticket!");
+            return false;
+          }
+          $("#mcaptcha").hide();
+          const response = await fetch("/payment/create-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount: packagePrice, data: userData }),
+          });
+
+          const order = await response.json();
+          var options = {
+            key: "rzp_test_tBJr4uFb5ZoYde",
+            amount: order.amount,
+            currency: "INR",
+            name: "Rang Tarang",
+            description: "Holi Party Ticket",
+            order_id: order.id,
+            handler: async function (response) {
+              console.log(response);
+              const verifyRes = await fetch("/payment/verify-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(response),
+              });
+
+              const result = await verifyRes.json();
+              let storedOrders = localStorage.getItem("storedOrders");
+              storedOrders = storedOrders ? JSON.parse(storedOrders) : [];
+              storedOrders.push(order.id);
+              localStorage.setItem(
+                "storedOrders",
+                JSON.stringify(storedOrders)
+              );
+
+              if (result.success) {
+                $.post("/payment/checkOrder", { orderId: order.id }, (data) => {
+                  if (data.status == "success") {
+                    window.location.href = "/orders";
+                  } else {
+                    alert(data.message);
+                  }
+                });
+              } else {
+                alert("Payment Failed!");
+                window.location.href = "/tickets";
+              }
+            },
+            prefill: {
+              name: userData[0].name,
+              contact: userData[0].mobileNumber,
+            },
+            theme: {
+              color: "#3399cc",
+            },
+          };
+
+          var rzp = new Razorpay(options);
+          rzp.open();
         });
       });
     </script>
