@@ -38,7 +38,7 @@
           <div class="row">
             <input type="hidden" id="sitekey" value="<%= captchaKey %>" />
             <div
-              class="col-md-4 mb-5 animate__animated animate__backInLeft animate__delay-1s"
+              class="col-lg-4 mb-5 animate__animated animate__backInLeft animate__delay-1s"
             >
               <div class="venue-detail">
                 <h3><span class="fa fa-map-marker"></span> Venue</h3>
@@ -49,7 +49,7 @@
                 </p>
               </div>
             </div>
-            <div class="col-md-8">
+            <div class="col-lg-8">
               <div class="ticket-form">
                 <div
                   class="internal-container c1 package-choose"
@@ -287,6 +287,12 @@
         opacity: 0.8;
       }
 
+      @media screen and (max-width: 992px) {
+        .venue-detail {
+          text-align: center;
+        }
+      }
+
       .package-choose .mcard {
         border: 2px solid;
         border-radius: 5px;
@@ -357,7 +363,10 @@
       }
       function renderForm(unit) {
         $(".nextbtn").click(() => {
-          validateForm();
+          const name = $(".name").val();
+          const mobile = $(".mobile").val();
+          const age = $(".age").val();
+          const college = $(".college").val();
           if (currentForm++ == unit) {
             showFinalSubmit();
           } else {
