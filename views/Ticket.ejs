@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Get Your Pass</title>
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="assets/css/bootstrap.min.css"
+    />
+
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.css" />
+  </head>
+  <body>
+    <div class="full-body">
+      <div class="header">
+        <div
+          class="d-inline-flex align-items-center justify-content-center text-center w-100"
+        >
+          <div>
+            <a href="/">
+              <img
+                alt="Logo Main"
+                src="/assets/images/logo_text.png"
+                width="100px"
+              />
+            </a>
+            <h1 class="p-0 m-0">Get Your Pass</h1>
+          </div>
+        </div>
+      </div>
+      <div class="main-body">
+        <div class="container py-5">
+          <div class="row">
+            <div class="col-md-4 mb-5">
+              <div class="venue-detail">
+                <h3><span class="fa fa-map-marker"></span> Venue</h3>
+                <p>
+                  <b>Vivaan Farms</b><br />
+                  Sector 150 Noida, 201310<br />
+                  Gautama Budhha Nagar, Uttar Pradesh
+                </p>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="ticket-form">
+                <div
+                  class="internal-container c1 package-choose"
+                  style="display: none"
+                >
+                  <div class="row">
+                    <!-- Individual -->
+                    <div class="col-lg-4 my-2">
+                      <div class="mcard" data-id="individual">
+                        <div
+                          class="mheader"
+                          style="
+                            background: url(/assets/images/packages/individual.jpg)
+                              center;
+                            background-size: cover;
+                          "
+                        ></div>
+                        <div class="mfooter">
+                          <h3 class="p-0">Individual</h3>
+                          <p>
+                            Perfect for students looking to enjoy their own
+                            experience while meeting new people and making
+                            friends.
+                          </p>
+                          <button class="tbtn" data-id="individual">
+                            <span class="price">₹499</span>
+                            <span>/ person</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Couple -->
+                    <div class="col-lg-4 my-2">
+                      <div class="mcard" data-id="couple">
+                        <div
+                          class="mheader"
+                          style="
+                            background: url(/assets/images/packages/couple.jpg)
+                              center;
+                            background-size: cover;
+                          "
+                        ></div>
+                        <div class="mfooter">
+                          <h3 class="p-0">Couple</h3>
+                          <p>
+                            Ideal for couples seeking a romantic getaway or
+                            shared adventure, offering a chance to relax and
+                            enjoy quality time together.
+                          </p>
+                          <button class="tbtn" data-id="couple">
+                            <span class="price">₹849</span>
+                            <span>/ couple</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Group -->
+                    <div class="col-lg-4 my-2">
+                      <div class="mcard" data-id="group">
+                        <div
+                          class="mheader"
+                          style="
+                            background: url(/assets/images/packages/group.png)
+                              bottom;
+                            background-size: cover;
+                          "
+                        ></div>
+                        <div class="mfooter">
+                          <h3 class="p-0">Group</h3>
+                          <p>
+                            Great for friends or teams wanting to bond, share
+                            exciting experiences, and create unforgettable
+                            memories together.
+                          </p>
+                          <button class="tbtn" data-id="group">
+                            <span class="price">₹2249</span>
+                            <span>/ 5 person</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="internal-container c2 package-choose"
+                  style="display: none"
+                >
+                  <div class="row">
+                    <div class="col-4">
+                      <button class="btn btn-primary backtopackage">
+                        <span class="fa fa-arrow-left"></span>
+                        <span> Back</span>
+                      </button>
+                    </div>
+                    <div class="col-8">
+                      <h3>Person Details</h3>
+                      <h5 class="myplan"></h5>
+                    </div>
+                  </div>
+                  <div class="individual-form mt-5 row justify-content-center">
+                    <form class="form-unit col-lg-8">
+                      <div class="row">
+                        <div class="col-md-6 my-1">
+                          <input
+                            class="form-control"
+                            name="name"
+                            placeholder="Enter Your Name"
+                          />
+                        </div>
+                        <div class="col-md-6 my-1">
+                          <input
+                            class="form-control"
+                            type="number"
+                            name="mobile"
+                            placeholder="Enter Your Mobile Number"
+                          />
+                        </div>
+                        <div class="col-md-6 my-1">
+                          <input
+                            class="form-control"
+                            type="number"
+                            name="age"
+                            placeholder="Enter Your Age (in Years)"
+                          />
+                        </div>
+                        <div class="col-md-6 my-1">
+                          <input
+                            class="form-control"
+                            type="text"
+                            name="college"
+                            placeholder="Enter Your College Name"
+                          />
+                        </div>
+                        <div class="col-md-12 my-1">
+                          <button class="w-100 btn btn-primary">Submit</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <style>
+      body {
+        background: url(assets/images/banner_bg.jpg) fixed;
+        background-size: cover;
+      }
+
+      .header {
+        background: white;
+        text-transform: uppercase;
+        font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+        padding: 2rem 0;
+        letter-spacing: 2px;
+      }
+
+      .main-body {
+        margin-top: 5rem;
+        background-color: white;
+      }
+
+      .venue-detail p {
+        opacity: 0.8;
+      }
+
+      .package-choose .mcard {
+        border: 2px solid;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      .package-choose .mcard {
+        height: 100%;
+        background-color: black;
+      }
+
+      .package-choose .mcard .mheader {
+        height: 200px;
+        background-position: center;
+        background-size: cover;
+      }
+
+      .package-choose .mcard .mfooter {
+        background: black;
+        color: white;
+        padding: 10px 20px;
+        max-height: 400px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .package-choose .mcard .mfooter .tbtn {
+        padding: 10px;
+        width: 100%;
+        background: transparent;
+        color: white;
+        border: 2px solid;
+        transition: 0.2s;
+      }
+
+      .package-choose .mcard .mfooter .tbtn:hover {
+        background: white;
+        color: black;
+      }
+
+      h5.myplan {
+        position: absolute;
+        background: purple;
+        color: white;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 10px;
+        margin-left: 10px;
+        font-size: 10px;
+      }
+    </style>
+
+    <script src="assets/js/jquery-2.1.0.min.js"></script>
+    <script>
+      $(document).ready(() => {
+        const showPage = (currentPage) => {
+          const clsPfx = ".ticket-form .internal-container.package-choose";
+          $(`${clsPfx}`).hide();
+          $(`${clsPfx}.c${currentPage}`).show();
+        };
+        let currentPage = 1;
+        let packagePrice = 499;
+        showPage(currentPage);
+
+        $(".backtopackage").click(() => {
+          showPage(--currentPage);
+        });
+
+        $(".package-choose.c1 button.tbtn").click(function () {
+          const tgt = $(this).data("id");
+          switch (tgt) {
+            case "individual":
+              packagePrice = 499;
+              break;
+
+            case "couple":
+              packagePrice = 849;
+              break;
+
+            case "group":
+              packagePrice = 2249;
+              break;
+
+            default:
+              packagePrice = 499;
+              break;
+          }
+
+          $(".myplan").text(`${tgt} - ₹${packagePrice}`);
+          showPage(++currentPage);
+        });
+      });
+    </script>
+  </body>
+</html>

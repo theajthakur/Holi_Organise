@@ -11,7 +11,7 @@ router.get("/about", (req, res) => {
 });
 
 router.get("/tickets", (req, res) => {
-  res.status(200).json({ message: "Ruko Zara sabar karo!!" });
+  res.status(200).render("Ticket");
 });
 
 module.exports = router;
