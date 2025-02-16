@@ -11,6 +11,8 @@
       href="assets/css/bootstrap.min.css"
     />
 
+    <link rel="stylesheet" href="/assets/css/animate.css" />
+
     <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.css" />
   </head>
   <body>
@@ -34,7 +36,10 @@
       <div class="main-body">
         <div class="container py-5">
           <div class="row">
-            <div class="col-md-4 mb-5">
+            <input type="hidden" id="sitekey" value="<%= captchaKey %>" />
+            <div
+              class="col-md-4 mb-5 animate__animated animate__backInLeft animate__delay-1s"
+            >
               <div class="venue-detail">
                 <h3><span class="fa fa-map-marker"></span> Venue</h3>
                 <p>
@@ -52,7 +57,9 @@
                 >
                   <div class="row">
                     <!-- Individual -->
-                    <div class="col-lg-4 my-2">
+                    <div
+                      class="col-lg-4 my-2 animate__animated animate__backInUp"
+                    >
                       <div class="mcard" data-id="individual">
                         <div
                           class="mheader"
@@ -78,7 +85,9 @@
                     </div>
 
                     <!-- Couple -->
-                    <div class="col-lg-4 my-2">
+                    <div
+                      class="col-lg-4 my-2 animate__animated animate__backInUp"
+                    >
                       <div class="mcard" data-id="couple">
                         <div
                           class="mheader"
@@ -104,7 +113,9 @@
                     </div>
 
                     <!-- Group -->
-                    <div class="col-lg-4 my-2">
+                    <div
+                      class="col-lg-4 my-2 animate__animated animate__backInUp"
+                    >
                       <div class="mcard" data-id="group">
                         <div
                           class="mheader"
@@ -134,57 +145,117 @@
                   class="internal-container c2 package-choose"
                   style="display: none"
                 >
-                  <div class="row">
-                    <div class="col-4">
-                      <button class="btn btn-primary backtopackage">
-                        <span class="fa fa-arrow-left"></span>
-                        <span> Back</span>
-                      </button>
-                    </div>
-                    <div class="col-8">
-                      <h3>Person Details</h3>
-                      <h5 class="myplan"></h5>
-                    </div>
-                  </div>
                   <div class="individual-form mt-5 row justify-content-center">
-                    <form class="form-unit col-lg-8">
-                      <div class="row">
-                        <div class="col-md-6 my-1">
+                    <table
+                      class="w-100 table table-striped"
+                      style="display: none"
+                    >
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Name</th>
+                        </tr>
+                      </thead>
+                    </table>
+                    <div class="form-unit col-lg-8">
+                      <div class="row variable_form">
+                        <div class="col-md-12 my-1">
+                          <label for="name" class="form-label">Name:*</label>
                           <input
+                            required
                             class="form-control"
-                            name="name"
+                            id="name"
                             placeholder="Enter Your Name"
                           />
                         </div>
-                        <div class="col-md-6 my-1">
+                        <div class="col-md-12 my-1">
+                          <label for="mobile" class="form-label"
+                            >Mobile Number:*</label
+                          >
                           <input
+                            required
                             class="form-control"
                             type="number"
-                            name="mobile"
+                            id="mobile"
                             placeholder="Enter Your Mobile Number"
                           />
                         </div>
-                        <div class="col-md-6 my-1">
+                        <div class="col-md-12 my-1">
+                          <label for="age" class="form-label"
+                            >Age (in Years):*</label
+                          >
                           <input
+                            required
                             class="form-control"
                             type="number"
-                            name="age"
-                            placeholder="Enter Your Age (in Years)"
+                            id="age"
+                            placeholder="Enter Your Age"
                           />
                         </div>
-                        <div class="col-md-6 my-1">
+                        <div class="col-md-12 my-1">
+                          <label for="college" class="form-label"
+                            >College Name:*</label
+                          >
                           <input
+                            required
                             class="form-control"
                             type="text"
-                            name="college"
+                            id="college"
                             placeholder="Enter Your College Name"
                           />
                         </div>
                         <div class="col-md-12 my-1">
-                          <button class="w-100 btn btn-primary">Submit</button>
+                          <label class="form-label">Select Gender:*</label>
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="radio"
+                              name="gender"
+                              id="male"
+                              value="Male"
+                            />
+                            <label class="form-check-label" for="male"
+                              >Male</label
+                            >
+                          </div>
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="radio"
+                              name="gender"
+                              id="female"
+                              value="Female"
+                            />
+                            <label class="form-check-label" for="female"
+                              >Female</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-12">
+                          <div class="text-end">
+                            <button
+                              class="my-2 btn btn-primary w-50 nextbtn rounded-0"
+                            >
+                              Next <span class="fa fa-arrow-right"></span>
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </form>
+
+                      <div class="row final-submit" style="display: none">
+                        <div class="w-100 justify-content-center d-inline-flex">
+                          <div id="mcaptcha"></div>
+                        </div>
+                        <div class="col-sm-12 my-2 text-center">
+                          <button
+                            class="w-50 btn btn-primary sbmtbtn"
+                            style="display: none"
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -270,6 +341,30 @@
 
     <script src="assets/js/jquery-2.1.0.min.js"></script>
     <script>
+      let currentForm = 1;
+      const userData = [];
+      function captchaChecked() {
+        $(".sbmtbtn").fadeIn();
+      }
+      function showFinalSubmit() {
+        $(".nextbtn").hide();
+        $(".final-submit").show();
+        $(".variable_form").hide();
+        grecaptcha.render("mcaptcha", {
+          sitekey: $("#sitekey").val(),
+          callback: "captchaChecked",
+        });
+      }
+      function renderForm(unit) {
+        $(".nextbtn").click(() => {
+          validateForm();
+          if (currentForm++ == unit) {
+            showFinalSubmit();
+          } else {
+            const name = "";
+          }
+        });
+      }
       $(document).ready(() => {
         const showPage = (currentPage) => {
           const clsPfx = ".ticket-form .internal-container.package-choose";
@@ -280,27 +375,27 @@
         let packagePrice = 499;
         showPage(currentPage);
 
-        $(".backtopackage").click(() => {
-          showPage(--currentPage);
-        });
-
         $(".package-choose.c1 button.tbtn").click(function () {
           const tgt = $(this).data("id");
           switch (tgt) {
             case "individual":
               packagePrice = 499;
+              renderForm(1);
               break;
 
             case "couple":
               packagePrice = 849;
+              renderForm(2);
               break;
 
             case "group":
               packagePrice = 2249;
+              renderForm(5);
               break;
 
             default:
               packagePrice = 499;
+              renderForm(1);
               break;
           }
 
@@ -309,5 +404,6 @@
         });
       });
     </script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback"></script>
   </body>
 </html>
