@@ -1,5 +1,6 @@
 const express = require("express");
-
+const Pass = require("../models/Pass");
+const Payment = require("../models/Payment");
 const router = express.Router();
 
 require("dotenv").config();
@@ -40,6 +41,30 @@ router.get("/contact-us", (req, res) => {
 
 router.get("/orders", (req, res) => {
   res.render("Orders");
+});
+
+router.post("/orders", async (req, res) => {
+  const { orderId } = req.body;
+  if (!orderId)
+    return res
+      .status(404)
+      .json({ status: "error", message: "No Order ID Given!!" });
+
+  const order = await Payment.findOne({ txnid: orderId });
+  if (!order)
+    return res.json({
+      status: "error",
+      message: "No Order Found with given ID",
+    });
+
+  const users = await Pass.findById(order.userId);
+  if (!users)
+    return res.json({
+      status: "error",
+      message: "No Pass detail found with given Order!",
+    });
+
+  return res.json({ status: "success", data: users });
 });
 
 module.exports = router;
