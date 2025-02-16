@@ -1,41 +1,60 @@
-require("dotenv").config();
 const express = require("express");
+const Razorpay = require("razorpay");
 const crypto = require("crypto");
-const axios = require("axios");
+require("dotenv").config(); // If using environment variables
+
 const router = express.Router();
 
-const PAYU_BASE_URL = "https://test.payu.in"; // Use test URL for sandbox
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
-router.post("/pay", async (req, res) => {
+router.post("/create-order", async (req, res) => {
+  const { amount } = req.body;
+
+  const options = {
+    amount: amount * 100,
+    currency: "INR",
+    receipt: `receipt_${Date.now()}`,
+  };
+
   try {
-    const { amount, productinfo, firstname, email, phone } = req.body;
-    const txnid = "Txn" + Math.floor(100000 + Math.random() * 900000); // Generate transaction ID
-
-    const data = {
-      key: process.env.PAYU_MERCHANT_KEY,
-      txnid: txnid,
-      amount: amount,
-      productinfo: productinfo,
-      firstname: firstname,
-      email: email,
-      phone: phone,
-      surl: process.env.PAYU_SUCCESS_URL, // Success URL
-      furl: process.env.PAYU_FAILURE_URL, // Failure URL
-      service_provider: "payu_paisa",
-    };
-
-    // Generate hash
-    const hashString = `${process.env.PAYU_MERCHANT_KEY}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|||||||||||${process.env.PAYU_MERCHANT_SALT}`;
-    const hash = crypto.createHash("sha512").update(hashString).digest("hex");
-    data.hash = hash;
-
-    res.json({
-      paymentUrl: `${PAYU_BASE_URL}/_payment`,
-      payload: data,
-    });
+    const order = await razorpay.orders.create(options);
+    res.json(order);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Payment initialization failed" });
+    res.status(500).send("Error creating order");
+  }
+});
+
+// Route to verify payment after success
+router.post("/verify-payment", async (req, res) => {
+  const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
+    req.body;
+
+  const generated_signature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+    .update(razorpay_order_id + "|" + razorpay_payment_id)
+    .digest("hex");
+
+  if (generated_signature === razorpay_signature) {
+    // Payment success, update database
+    res.json({ success: true, message: "Payment Verified" });
+  } else {
+    res
+      .status(400)
+      .json({ success: false, message: "Payment Verification Failed" });
+  }
+});
+
+router.post("/checkOrder", async (req, res) => {
+  const { orderId } = req.body;
+  try {
+    const response = await razorpay.orders.fetchPayments(orderId);
+    res.json({ data: response });
+  } catch (error) {
+    console.error("Error fetching payment details:", error);
   }
 });
 

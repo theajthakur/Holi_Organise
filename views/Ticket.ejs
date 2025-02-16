@@ -250,6 +250,7 @@
                           <button
                             class="w-50 btn btn-primary sbmtbtn"
                             style="display: none"
+                            id="payButton"
                           >
                             Submit
                           </button>
@@ -264,6 +265,55 @@
         </div>
       </div>
     </div>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+      document
+        .getElementById("payButton")
+        .addEventListener("click", async function () {
+          const response = await fetch("/payment/create-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount: 1 }),
+          });
+
+          const order = await response.json();
+          var options = {
+            key: "rzp_live_n5r0eMfuX4obUf", // Replace with your Razorpay Key ID
+            amount: order.amount, // Amount in paise
+            currency: "INR",
+            name: "Rang Tarang",
+            description: "Holi Party Ticket",
+            order_id: order.id,
+            handler: async function (response) {
+              console.log(response);
+              // Step 3: Send payment details to server for verification
+              const verifyRes = await fetch("/payment/verify-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(response),
+              });
+
+              const result = await verifyRes.json();
+              if (result.success) {
+                alert("Payment Successful!");
+              } else {
+                alert("Payment Failed!");
+              }
+            },
+            prefill: {
+              name: "Test User",
+              email: "test@example.com",
+              contact: "9999999999",
+            },
+            theme: {
+              color: "#3399cc",
+            },
+          };
+
+          var rzp = new Razorpay(options);
+          rzp.open();
+        });
+    </script>
     <style>
       body {
         background: url(assets/images/banner_bg.jpg) fixed;
