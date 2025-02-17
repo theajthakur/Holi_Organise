@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel</title>
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="assets/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <% if(locals.user){ %>
+    <div class="cp-bdy row m-0">
+      <div class="col-md-4 col-lg-3">
+        <div class="h-100 shadow-sm vh-100">
+          <h3 class="text-center py-3 border-bottom"><%= user.name%></h3>
+        </div>
+      </div>
+      <div class="col-md-8 col-lg-9"></div>
+    </div>
+    <%}else{%>
+    <div
+      class="vh-100 w-100 d-inline-flex align-items-center justify-content-center"
+    >
+      <h1>ADMIN</h1>
+    </div>
+    <%}%>
+  </body>
+</html>

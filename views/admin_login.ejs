@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="assets/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div
+      class="w-100 vh-100 justify-content-center align-items-center d-inline-flex"
+    >
+      <div class="col-11 col-sm-10 col-md-8 col-lg-6">
+        <div class="shadow-lg p-3">
+          <h3 class="text-center">Admin Account</h3>
+          <p class="lead text-center">
+            Create Your admin account to get full access of website
+          </p>
+          <% if(locals.error){ %>
+          <div class="my-2">
+            <div class="alert alert-danger"><%= error %></div>
+          </div>
+          <% } %>
+          <form method="POST" action="/auth">
+            <input
+              required
+              type="number"
+              name="number"
+              placeholder="Enter Your Mobile Number"
+              class="form-control my-2"
+            />
+            <input
+              required
+              type="password"
+              name="password"
+              placeholder="Enter Password"
+              class="form-control my-2"
+            />
+            <button class="btn mt-3 w-100 btn-success">Create Account</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -5,3 +5,4 @@ node_modules/
 
 access.log
 qr
+admin_signup.ejs

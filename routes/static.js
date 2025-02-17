@@ -122,4 +122,8 @@ router.get("/vj/logs", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "middlewares", "access.log"));
 });
 
+router.get("/logout", (req, res) => {
+  res.cookie("auth_token", "").redirect("/");
+});
+
 module.exports = router;
