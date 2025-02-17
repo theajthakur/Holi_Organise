@@ -30,7 +30,8 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", logMiddleware, staticRouter);
+app.use(logMiddleware);
+app.use("/", staticRouter);
 app.use("/payment", payRouter);
 
 app.listen(port, () => console.log(`App running on http://localhost:${port}`));
