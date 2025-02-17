@@ -76,13 +76,17 @@
                       </div>
                       <div class="ticket-body">
                         <div class="row">
-                            <div class="col-md-6">
-                                <h4>${ticket.age}, ${ticket.gender}</h4>
-                                <h4>${ticket.college}</h4>
-                                <button class="rounded-0 btn btn-success">Download Pass</button>    
+                            <div class="col-sm-6">
+                                <div class="h-100 d-inline-flex align-items-center">
+                                    <div class="px-3">
+                                        <h4>${ticket.age}, ${ticket.gender}</h4>
+                                        <h4>${ticket.college}</h4>
+                                        <button class="rounded-0 btn btn-success">Download Pass</button>    
+                                    </div>      
+                                </div>  
                             </div>
-                            <div class="col-md-6">
-                                <div class="img-container" style="float: right; padding-right: 20px">
+                            <div class="col-sm-6">
+                                <div class="img-container">
                                     <div class="bg-white d-inline-flex align-content-end">
                                         <img src="/qr/generate/${
                                           ticket._id
@@ -160,6 +164,17 @@
       font-size: 0.8rem;
       font-weight: 400;
       padding-left: 10px;
+    }
+
+    .img-container {
+      float: right;
+      padding: 20px;
+    }
+
+    @media screen and (max-width: 575px) {
+      .img-container {
+        float: none;
+      }
     }
   </style>
 </html>
