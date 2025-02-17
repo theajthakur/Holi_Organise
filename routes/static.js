@@ -1,4 +1,6 @@
 const express = require("express");
+const QRCode = require("qrcode");
+const path = require("path");
 const Pass = require("../models/Pass");
 const Payment = require("../models/Payment");
 const router = express.Router();
@@ -57,7 +59,9 @@ router.post("/orders", async (req, res) => {
       message: "No Order Found with given ID",
     });
 
-  const users = await Pass.findById(order.userId);
+  const users = await Pass.find({
+    $or: [{ _id: order.userId }, { leader: order.userId }],
+  });
   if (!users)
     return res.json({
       status: "error",
@@ -65,6 +69,29 @@ router.post("/orders", async (req, res) => {
     });
 
   return res.json({ status: "success", data: users });
+});
+
+router.get("/qr/generate/:data", async (req, res) => {
+  const data = req.params.data;
+
+  QRCode.toBuffer(
+    data,
+    {
+      type: "png",
+      margin: 1,
+      width: 200,
+      height: 200,
+      scale: 10,
+    },
+    (err, buffer) => {
+      if (err) {
+        res.status(500).send("Error generating QR code");
+      } else {
+        res.type("png");
+        res.send(buffer);
+      }
+    }
+  );
 });
 
 module.exports = router;

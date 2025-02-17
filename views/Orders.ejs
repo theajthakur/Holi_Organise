@@ -68,18 +68,34 @@
         orders.forEach((order) => {
           $.post("/orders", { orderId: order }, (data) => {
             if (data.status == "success") {
-              const ticket = data.data;
-              $(".passes-container").append(`<div class="ticket-unit">
-            <div class="ticket-interior">
+              data.data.forEach((ticket) => {
+                $(".passes-container").append(`<div class="ticket-unit">
+                 <div class="ticket-interior">
                       <div class="ticket-header">
                         <h3>${ticket.name.toUpperCase()}</h3>
                       </div>
                       <div class="ticket-body">
-                        <h4>${ticket.age}, ${ticket.gender}</h4>
-                        <h4>${ticket.college}</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>${ticket.age}, ${ticket.gender}</h4>
+                                <h4>${ticket.college}</h4>
+                                <button class="rounded-0 btn btn-success">Download Pass</button>    
+                            </div>
+                            <div class="col-md-6">
+                                <div class="img-container" style="float: right; padding-right: 20px">
+                                    <div class="bg-white d-inline-flex align-content-end">
+                                        <img src="/qr/generate/${
+                                          ticket._id
+                                        }" width="100px">      
+                                    </div>  
+                                </div>    
+                            </div>
+                        </div>
                       </div>
                     </div>
-                  </div>`);
+                  </div>
+                `);
+              });
             }
           });
         });
