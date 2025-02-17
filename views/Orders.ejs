@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="/assets/css/animate.css" />
 
     <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   </head>
   <body>
     <div class="full-body">
@@ -65,11 +66,14 @@
     $(document).ready(() => {
       const orders = JSON.parse(localStorage.storedOrders);
       if (orders.length > 0) {
+        let curIn = 0;
         orders.forEach((order) => {
           $.post("/orders", { orderId: order }, (data) => {
             if (data.status == "success") {
               data.data.forEach((ticket) => {
-                $(".passes-container").append(`<div class="ticket-unit">
+                $(".passes-container").append(`<div class="ticket-unit" id="${
+                  ticket._id
+                }">
                  <div class="ticket-interior">
                       <div class="ticket-header">
                         <h3>RANG TARANG</h3>
@@ -82,16 +86,18 @@
                                         <h6>${ticket.name.toUpperCase()}</h6>
                                         <h4>${ticket.age}, ${ticket.gender}</h4>
                                         <h4>${ticket.college}</h4>
-                                        <button class="rounded-0 btn btn-success">Download Pass</button>    
+                                        <button class="rounded-0 btn btn-success dwnltkt" data-id="${
+                                          ticket._id
+                                        }">Download Pass</button>    
                                     </div>      
                                 </div>  
                             </div>
                             <div class="col-sm-6">
                                 <div class="img-container">
-                                    <div class="bg-white d-inline-flex align-content-end">
-                                        <img src="/qr/generate/${
-                                          ticket._id
-                                        }" width="100px">      
+                                    <div class="bg-white d-inline-flex align-content-end" style="background: url('/qr/generate/${
+                                      ticket._id
+                                    }'); background-size: cover;width: 100px; height: 100px">
+                                             
                                     </div>  
                                 </div>    
                             </div>
@@ -101,12 +107,35 @@
                   </div>
                 `);
               });
+              if (++curIn == orders.length) {
+                $(".dwnltkt").click(function () {
+                  $(this).hide(); // Hide button before capturing
+                  const uid = $(this).data("id");
+                  if (!uid) return alert("No Id found!");
+
+                  let div = document.getElementById(uid);
+
+                  html2canvas(div, {
+                    scale: 3, // Increase scale for higher resolution (try 2, 3, or 4)
+                    useCORS: true, // Ensure QR code and external images are loaded
+                    allowTaint: true, // Allow cross-origin images
+                  }).then((canvas) => {
+                    let image = canvas.toDataURL("image/png");
+                    let link = document.createElement("a");
+                    link.href = image;
+                    link.download = `pass_${uid}.png`;
+                    link.click();
+                    $(this).show(); // Show button again after capture
+                  });
+                });
+              }
             }
           });
         });
       }
     });
   </script>
+
   <style>
     body {
       background: url(assets/images/banner_bg.jpg) fixed;
