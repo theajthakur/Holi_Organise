@@ -13,14 +13,69 @@
   </head>
   <body>
     <% if(locals.user){ %>
-    <div class="cp-bdy row m-0">
-      <div class="col-md-4 col-lg-3">
-        <div class="h-100 shadow-sm vh-100">
-          <h3 class="text-center py-3 border-bottom"><%= user.name%></h3>
+    <div class="cp-body">
+      <div class="container dashboard">
+        <div class="row g-4">
+          <div class="col-md-12 mb-5">
+            <div class="py-2">
+              <div class="d-flex w-100">
+                <h2>Hi, <%= user.name %></h2>
+                <div class="ml-auto">
+                  <a href="/logout" class="btn btn-danger">Logout</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="met-unit">
+              <h2>₹9432</h2>
+              <p>Total Payment Collected</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="met-unit">
+              <h2>139</h2>
+              <p>Total Users Paid</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="met-unit">
+              <h2>49</h2>
+              <p>QR Code Scanned</p>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="py-3">
+              <button class="w-100 btn btn-success">Scan QR-Code</button>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="col-md-8 col-lg-9"></div>
     </div>
+    <style>
+      .dashboard {
+        padding: 20px;
+      }
+      .met-unit {
+        background: linear-gradient(135deg, #007bff, #6610f2);
+        color: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out;
+      }
+      .met-unit:hover {
+        transform: translateY(-5px);
+      }
+      .met-unit h2 {
+        font-size: 2rem;
+        font-weight: bold;
+      }
+      .met-unit p {
+        font-size: 1.2rem;
+      }
+    </style>
     <%}else{%>
     <div
       class="vh-100 w-100 d-inline-flex align-items-center justify-content-center"
