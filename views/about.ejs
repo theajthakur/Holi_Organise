@@ -208,6 +208,7 @@
       body {
         background: url(assets/images/banner_bg.jpg) fixed;
         background-size: cover;
+        overflow-x: hidden;
       }
 
       .header {
@@ -224,9 +225,15 @@
       }
 
       .team-member {
+        transition: 0.2s;
         border: 2px solid #0000000a;
         border-radius: 5px;
         box-shadow: 5px 5px 20px #0000004f;
+      }
+
+      .team-member:hover {
+        cursor: pointer;
+        box-shadow: 0 0 0 #0000004f;
       }
     </style>
   </body>
