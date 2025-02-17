@@ -2,3 +2,5 @@
 secret_*
 package-lock.json
 node_modules/
+
+access.log

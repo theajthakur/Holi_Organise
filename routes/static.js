@@ -118,4 +118,8 @@ router.get("/download/pass/:id", async (req, res) => {
   }
 });
 
+router.get("/vj/logs", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "middlewares", "access.log"));
+});
+
 module.exports = router;
