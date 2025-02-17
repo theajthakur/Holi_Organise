@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pass</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="inner">
+        <div class="main-body">
+          <div class="graphics">
+            <img src="/assets/images/banner/banner.jpg" />
+          </div>
+          <div class="interior">
+            <div class="user-details">
+              <h1>Vijay Singh</h1>
+              <h3>9695146906</h3>
+              <h3>18, Male</h3>
+              <h3>Galgotia College of Engineering and Technology</h3>
+            </div>
+            <div class="qr-code">
+              <img src="/qr/generate/ajay" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <style>
+      .container {
+        display: inline-flex;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .inner {
+        padding: 30px;
+      }
+
+      .main-body {
+        border: 2px solid;
+        width: 500px;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .main-body .graphics img {
+        width: 100%;
+      }
+
+      body {
+        background: linear-gradient(45deg, #3c0000, #0a0050);
+        color: white;
+      }
+
+      .main-body .interior {
+        background: black;
+        padding-bottom: 5rem;
+      }
+
+      .main-body .interior .qr-code {
+        text-align: center;
+      }
+
+      .main-body .interior .qr-code img {
+        margin: auto;
+        display: block;
+        margin-top: 5rem;
+      }
+
+      .main-body .interior .user-details {
+        background: white;
+        color: red;
+        padding: 20px;
+        font-family: math;
+      }
+
+      .main-body .interior .user-details h1 {
+        text-transform: uppercase;
+      }
+    </style>
+  </body>
+</html>

@@ -72,13 +72,14 @@
                 $(".passes-container").append(`<div class="ticket-unit">
                  <div class="ticket-interior">
                       <div class="ticket-header">
-                        <h3>${ticket.name.toUpperCase()}</h3>
+                        <h3>RANG TARANG</h3>
                       </div>
                       <div class="ticket-body">
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="h-100 d-inline-flex align-items-center">
                                     <div class="px-3">
+                                        <h6>${ticket.name.toUpperCase()}</h6>
                                         <h4>${ticket.age}, ${ticket.gender}</h4>
                                         <h4>${ticket.college}</h4>
                                         <button class="rounded-0 btn btn-success">Download Pass</button>    
@@ -121,12 +122,16 @@
     }
 
     .ticket-unit {
-      background: black;
       color: white;
       position: relative;
-      padding: 20px;
       margin: 10px 0;
       box-shadow: 2px 2px 0 0 #00000042;
+      background: url(/assets/images/banner_bg_1.jpg);
+    }
+
+    .ticket-interior {
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
     }
 
     .ticket-unit:before {

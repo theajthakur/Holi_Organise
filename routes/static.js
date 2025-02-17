@@ -94,4 +94,28 @@ router.get("/qr/generate/:data", async (req, res) => {
   );
 });
 
+router.get("/download/pass/:id", async (req, res) => {
+  const { id } = req.params;
+  if (!id)
+    return res.status(404).json({ status: "error", message: "No Id found!" });
+  try {
+    const user = await Pass.findById(id);
+    if (!user)
+      return res
+        .status(404)
+        .json({ status: "error", message: "No User Found!" });
+
+    const payment = await Payment.findById(user._id);
+
+    if (!payment)
+      return res.status(404).json({
+        status: "error",
+        message: `No Payment Found for ${user.name}!`,
+      });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ status: "error", message: "Invalid Input" });
+  }
+});
+
 module.exports = router;
