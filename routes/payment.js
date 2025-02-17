@@ -47,6 +47,7 @@ router.post("/create-order", async (req, res) => {
       break;
     case 5:
       calcAmount = 2249;
+      break;
     default:
       calcAmount = 499;
       break;
@@ -55,7 +56,7 @@ router.post("/create-order", async (req, res) => {
   const leaderData = await Pass.create(leader);
   if (ticketCount > 1) {
     for (let i = 1; i < ticketCount; i++) {
-      const otherTickets = await Pass.create({
+      await Pass.create({
         ...data[i],
         leader: leaderData._id,
       });
