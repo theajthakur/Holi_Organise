@@ -551,10 +551,15 @@
             return false;
           }
           $("#mcaptcha").hide();
+          const referral = localStorage.getItem("referral");
           const response = await fetch("/payment/create-order", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: packagePrice, data: userData }),
+            body: JSON.stringify({
+              amount: packagePrice,
+              data: userData,
+              referral: referral,
+            }),
           });
 
           const order = await response.json();

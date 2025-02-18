@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script>
+      const referral = window.location.search.split("=")[1];
+      if (referral) {
+        localStorage.setItem("referral", referral);
+        window.location.href = "/";
+      }
+    </script>
+
     <!-- Google tag (gtag.js) -->
     <script
       async

@@ -13,7 +13,7 @@ const razorpay = new Razorpay({
 });
 
 router.post("/create-order", async (req, res) => {
-  const { amount, data } = req.body;
+  const { amount, data, referral } = req.body;
   const ticketCount = data.length;
   if (!amount || !data || ticketCount == 0)
     return res
@@ -59,6 +59,7 @@ router.post("/create-order", async (req, res) => {
       await Pass.create({
         ...data[i],
         leader: leaderData._id,
+        referrer: referral,
       });
     }
   }
