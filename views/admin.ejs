@@ -12,6 +12,12 @@
       type="text/css"
       href="assets/css/bootstrap.min.css"
     />
+    <style>
+      .stick-menu {
+        position: sticky;
+        top: 0;
+      }
+    </style>
   </head>
   <body>
     <% if(locals.user){ %>
@@ -28,27 +34,106 @@
               </div>
             </div>
           </div>
-          <div class="col-md-4">
-            <div class="met-unit">
-              <h2>₹9432</h2>
+          <div class="col-md-3">
+            <div class="met-unit my-2">
+              <h2 id="total_payment">₹ <%= payment %></h2>
               <p>Total Payment Collected</p>
             </div>
           </div>
-          <div class="col-md-4">
-            <div class="met-unit">
-              <h2>139</h2>
+          <div class="col-md-3">
+            <div class="met-unit my-2">
+              <h2 id="success_users">0</h2>
               <p>Total Users Paid</p>
             </div>
           </div>
-          <div class="col-md-4">
-            <div class="met-unit">
-              <h2>49</h2>
+          <div class="col-md-3">
+            <div class="met-unit my-2">
+              <h2 id="qr_scans">0</h2>
+              <p>QR Code Scanned</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="met-unit my-2">
+              <h2>0</h2>
               <p>QR Code Scanned</p>
             </div>
           </div>
           <div class="col-12">
-            <div class="py-3">
-              <button class="w-100 btn btn-success">Scan QR-Code</button>
+            <div class="row justify-content-center">
+              <div class="col-lg-4">
+                <div class="container mt-4 stick-menu">
+                  <div class="card p-4 shadow-lg">
+                    <h4 class="mb-3 text-center">Important Links</h4>
+                    <div class="list-group">
+                      <ul
+                        class="nav nav-pills flex-column mb-auto link-clicker"
+                      >
+                        <li>
+                          <a href="#" class="nav-link active" data-id="users">
+                            Users
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#" class="nav-link" data-id="qr">
+                            QR Scanner
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-8">
+                <h3 class="text-center py-3 title mt-3">USERS</h3>
+                <div class="vjdynamic users">
+                  <div class="container content-container">
+                    <%if(users){%>
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Mobile Number</th>
+                          <th>Age</th>
+                          <th>College</th>
+                          <th>Gender</th>
+                          <th>Package</th>
+                          <th>Referrer</th>
+                          <th>Payment</th>
+                          <th>Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% users.forEach(user => { %>
+                        <tr>
+                          <td><%= user.name %></td>
+                          <td><%= user.mobileNumber %></td>
+                          <td><%= user.age %></td>
+                          <td><%= user.college %></td>
+                          <td><%= user.gender %></td>
+                          <td><%= user.packageName %></td>
+                          <td>
+                            <%= payments.find((d) =>
+                            d.userId.equals(user._id))?.status %>
+                          </td>
+                          <td>
+                            <%= payments.find((d) => ( ||
+                            (d.userId.equals(user.leader))))?.amount %>
+                          </td>
+                          <td>
+                            <%= new
+                            Date(user.createdAt).toLocaleDateString('en-US') %>
+                          </td>
+                        </tr>
+                        <% }); %>
+                      </tbody>
+                    </table>
+                    <%}else{%> <%}%>
+                  </div>
+                </div>
+                <div class="vjdynamic qr">
+                  <div class="container content-container"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -89,5 +174,21 @@
       <h1>ADMIN</h1>
     </div>
     <%}%>
+
+    <script src="assets/js/jquery-2.1.0.min.js"></script>
+    <script>
+      const users = <%= JSON.stringify(users) %>;
+      $(document).ready(() => {
+        $("ul.link-clicker li a").click(function () {
+          const tgt = $(this).data("id");
+          if (!tgt) return alert("Invalid Link");
+          $(".vjdynamic").hide();
+          $(`.vjdynamic.${tgt}`).fadeIn();
+          $(".title").text(tgt.toUpperCase());
+          $(".link-clicker a").removeClass("active");
+          $(this).addClass("active");
+        });
+      });
+    </script>
   </body>
 </html>
