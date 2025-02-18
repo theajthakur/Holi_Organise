@@ -13,6 +13,7 @@ Router.get("/", async (req, res) => {
     const payments = await Payment.find({});
     const referral = await Referral.find({});
     res.render("admin", {
+      async: true,
       user: req.user,
       users: users,
       payments: payments,
