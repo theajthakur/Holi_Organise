@@ -12,12 +12,18 @@ Router.get("/", async (req, res) => {
     const users = await Pass.find({});
     const payments = await Payment.find({});
     const referral = await Referral.find({});
+    let payment = 0;
+    payments.forEach((d) => {
+      if (d.status == "completed") {
+        payment += d.amount;
+      }
+    });
     res.render("admin", {
       user: req.user,
       users: users,
       payments: payments,
       referral: referral,
-      payment: 0,
+      payment: payment,
     });
   } catch (error) {
     console.log(error);

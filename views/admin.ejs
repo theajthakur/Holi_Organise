@@ -42,7 +42,9 @@
           </div>
           <div class="col-md-3">
             <div class="met-unit my-2">
-              <h2 id="success_users">0</h2>
+              <h2 id="success_users">
+                <%= payments.filter((d) => d.status=="completed").length %>
+              </h2>
               <p>Total Users Paid</p>
             </div>
           </div>
@@ -133,8 +135,14 @@
                 </div>
                 <div class="vjdynamic qr">
                   <div class="container content-container">
-                    <div id="qr-reader"></div>
-                    <video id="video" autoplay width="100%"></video>
+                    <button
+                      id="scan-btn"
+                      class="btn btn-primary"
+                      onclick="toggleQRScanner()"
+                    >
+                      Start Scanning
+                    </button>
+                    <video id="video" autoplay style="display: none"></video>
                     <canvas id="canvas" hidden></canvas>
                     <p>Scanned QR Code: <span id="output"></span></p>
                   </div>
@@ -183,47 +191,79 @@
 
     <script src="/assets/js/jquery-2.1.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
     <script>
+      let scanning = false;
+      let stream = null;
+      let scanInterval = null;
+
       async function startQRScanner() {
         const video = document.getElementById("video");
         const canvas = document.getElementById("canvas");
         const context = canvas.getContext("2d");
 
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({
+          stream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: "environment" },
           });
           video.srcObject = stream;
+          scanning = true;
 
-          video.addEventListener("play", () => {
-            setInterval(() => {
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
-              context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          $("video").show();
 
-              const imageData = context.getImageData(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-              );
-              const qrCode = jsQR(
-                imageData.data,
-                imageData.width,
-                imageData.height
-              );
+          scanInterval = setInterval(() => {
+            if (!scanning) return;
 
-              if (qrCode) {
-                document.getElementById("output").innerText = qrCode.data;
-              }
-            }, 500);
-          });
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const imageData = context.getImageData(
+              0,
+              0,
+              canvas.width,
+              canvas.height
+            );
+            const qrCode = jsQR(
+              imageData.data,
+              imageData.width,
+              imageData.height
+            );
+
+            if (qrCode) {
+              stopQRScanner();
+              getQrDetail(qrCode.data);
+            }
+          }, 500);
         } catch (err) {
           console.error("Error accessing camera:", err);
         }
       }
 
-      startQRScanner();
+      function getQrDetail(id) {
+        console.log(id);
+      }
+
+      function stopQRScanner() {
+        if (stream) {
+          stream.getTracks().forEach((track) => track.stop()); // Stop the camera
+        }
+        clearInterval(scanInterval);
+        scanning = false;
+        $("video").hide();
+      }
+
+      function toggleQRScanner() {
+        const button = document.getElementById("scan-btn");
+
+        if (scanning) {
+          stopQRScanner();
+          button.innerText = "Start Scanning";
+        } else {
+          startQRScanner();
+          button.innerText = "Stop Scanning";
+        }
+      }
     </script>
 
     <script>
