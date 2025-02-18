@@ -132,7 +132,12 @@
                   </div>
                 </div>
                 <div class="vjdynamic qr">
-                  <div class="container content-container"></div>
+                  <div class="container content-container">
+                    <div id="qr-reader"></div>
+                    <video id="video" autoplay width="100%"></video>
+                    <canvas id="canvas" hidden></canvas>
+                    <p>Scanned QR Code: <span id="output"></span></p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -176,10 +181,55 @@
     </div>
     <%}%>
 
-    <script src="assets/js/jquery-2.1.0.min.js"></script>
+    <script src="/assets/js/jquery-2.1.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script>
-      const users = <%= JSON.stringify(users) %>;
+      async function startQRScanner() {
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const context = canvas.getContext("2d");
+
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment" },
+          });
+          video.srcObject = stream;
+
+          video.addEventListener("play", () => {
+            setInterval(() => {
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+              context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+              const imageData = context.getImageData(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+              );
+              const qrCode = jsQR(
+                imageData.data,
+                imageData.width,
+                imageData.height
+              );
+
+              if (qrCode) {
+                document.getElementById("output").innerText = qrCode.data;
+              }
+            }, 500);
+          });
+        } catch (err) {
+          console.error("Error accessing camera:", err);
+        }
+      }
+
+      startQRScanner();
+    </script>
+
+    <script>
       $(document).ready(() => {
+        $(".vjdynamic").hide();
+        $(".vjdynamic.users").fadeIn();
         $("ul.link-clicker li a").click(function () {
           const tgt = $(this).data("id");
           if (!tgt) return alert("Invalid Link");
