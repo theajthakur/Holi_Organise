@@ -26,14 +26,20 @@ router.post("/", async (req, res) => {
       .status(400)
       .render("admin_login", { error: "Invalid Password!" });
   }
+
   const token = jwt.sign(
     { userId: user._id, number: user.number, name: user.name },
-    process.env.JWT_SECRET
+    process.env.JWT_SECRET,
+    { expiresIn: "30d" }
   );
+
+  const thirtyDaysFromNow = new Date();
+  thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
 
   res.cookie("auth_token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    expires: thirtyDaysFromNow,
   });
 
   return res.redirect("/admin");
