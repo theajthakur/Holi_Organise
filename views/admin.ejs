@@ -193,6 +193,7 @@
                           <th>Name</th>
                           <th>Mobile</th>
                           <th>Admin</th>
+                          <th>date</th>
                         </thead>
                         <tbody class="refer-list"></tbody>
                       </table>
@@ -375,12 +376,25 @@
     </script>
 
     <script>
+      function renderRefers() {
+        $.get("/admin/refer", (data) => {
+          $(".refer-list").empty();
+          data.data.forEach((d) => {
+            $(".refer-list").append(
+              `<tr><td>${d.name}</td><td>${d.mobile}</td><td>${
+                d.admin
+              }</td><td>${new Date(d.createdAt).toDateString()}</td></tr>`
+            );
+          });
+        });
+      }
       $(document).ready(() => {
         $(".vjdynamic").hide();
         $(".vjdynamic.users").fadeIn();
         $("ul.link-clicker li a").click(function () {
           const tgt = $(this).data("id");
           if (!tgt) return alert("Invalid Link");
+          if (tgt == "referral") renderRefers();
           $(".vjdynamic").hide();
           $(`.vjdynamic.${tgt}`).fadeIn();
           $(".title").text(tgt.toUpperCase());
@@ -400,6 +414,10 @@
             if (data.status == "success") {
               $(".referral-link-status").removeClass("alert-danger");
               $(".referral-link-status").addClass("alert-success");
+
+              $(".refer-list").append(
+                `<tr><td>${name}</td><td>${mobile}</td><td>You</td><td>${new Date().toDateString()}</td></tr>`
+              );
             } else {
               $(".referral-link-status").addClass("alert-danger");
               $(".referral-link-status").removeClass("alert-success");

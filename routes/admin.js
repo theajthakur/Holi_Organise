@@ -148,4 +148,21 @@ Router.post("/refer", async (req, res) => {
   }
 });
 
+Router.get("/refer", async (req, res) => {
+  try {
+    const refers = await Referral.find();
+    return res.json({
+      status: "success",
+      message: "Fetched All Refers",
+      data: refers,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: "error",
+      message: "Server Error while fetching refers",
+    });
+  }
+});
+
 module.exports = Router;
