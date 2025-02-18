@@ -14,6 +14,9 @@ const ReferralSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  admin: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

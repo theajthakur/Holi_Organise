@@ -7,6 +7,7 @@ const Admin = require("../models/Admin");
 const Pass = require("../models/Pass");
 const Payment = require("../models/Payment");
 const Referral = require("../models/Referral");
+const { v4: uuidv4 } = require("uuid");
 
 Router.get("/", async (req, res) => {
   try {
@@ -109,6 +110,41 @@ Router.post("/scan", async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.json({ status: "error", message: `Data is manipulated: ${id}` });
+  }
+});
+
+Router.post("/refer", async (req, res) => {
+  const { name, mobile } = req.body;
+  if (!name || !mobile)
+    return res.json({ status: "error", message: "Invalid Parameters!" });
+
+  try {
+    const refer = await Referral.findOne({ mobile: mobile });
+    if (refer)
+      return res.json({
+        status: "success",
+        message: `Already Generated: <a target="_blank" href="https://api.whatsapp.com/send?text=Hey ${refer.name}, I just earned a reward by inviting friends! 🎉 Join me here: https://seal-app-z4br9.ondigitalocean.app/?referrer=${refer.code} and get exclusive benefits too! 🚀">Share on Whatsapp</a>`,
+      });
+
+    const referralCode = uuidv4();
+
+    await Referral.create({
+      name: name,
+      mobile: mobile,
+      code: referralCode,
+      admin: req.user.name,
+    });
+
+    return res.json({
+      status: "success",
+      message: `Referral Generated: <a target="_blank" href="https://api.whatsapp.com/send?text=Hey ${name}, I just earned a reward by inviting friends! 🎉 Join me here: https://seal-app-z4br9.ondigitalocean.app/?referrer=${referralCode} and get exclusive benefits too! 🚀">Share on Whatsapp</a>`,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: "success",
+      message: "Server Error while creating Referral",
+    });
   }
 });
 

@@ -74,6 +74,11 @@
                             QR Scanner
                           </a>
                         </li>
+                        <li>
+                          <a href="#" class="nav-link" data-id="referral"
+                            >Referral</a
+                          >
+                        </li>
                       </ul>
                     </div>
                   </div>
@@ -147,6 +152,50 @@
                           <div class="details"></div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="vjdynamic referral">
+                  <div class="container content-container">
+                    <div class="shadow-lg p-3">
+                      <form class="refer-create">
+                        <h5 class="my-2 text-center">Create Referral</h5>
+                        <div class="mb-3">
+                          <label for="name" class="form-label">Name</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="name"
+                            placeholder="Enter your name"
+                          />
+                        </div>
+                        <div class="mb-3">
+                          <label for="mobile" class="form-label">Mobile</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="mobile"
+                            placeholder="Enter your mobile number"
+                          />
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                          Submit
+                        </button>
+                      </form>
+                      <div
+                        class="alert referral-link-status mt-3"
+                        style="display: none"
+                      ></div>
+                    </div>
+                    <div class="mt-3">
+                      <table class="table table-striped">
+                        <thead>
+                          <th>Name</th>
+                          <th>Mobile</th>
+                          <th>Admin</th>
+                        </thead>
+                        <tbody class="refer-list"></tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
@@ -337,6 +386,26 @@
           $(".title").text(tgt.toUpperCase());
           $(".link-clicker a").removeClass("active");
           $(this).addClass("active");
+        });
+
+        $(".refer-create").submit(() => {
+          $(".referral-link-status").hide();
+          const name = $(".refer-create #name").val();
+          const mobile = $(".refer-create #mobile").val();
+          if (!name || !mobile) return alert("All fields Required!");
+          $.post("/admin/refer", { name: name, mobile: mobile }, (data) => {
+            $(".referral-link-status").show();
+            $(".referral-link-status").html(data.message);
+
+            if (data.status == "success") {
+              $(".referral-link-status").removeClass("alert-danger");
+              $(".referral-link-status").addClass("alert-success");
+            } else {
+              $(".referral-link-status").addClass("alert-danger");
+              $(".referral-link-status").removeClass("alert-success");
+            }
+          });
+          return false;
         });
       });
     </script>

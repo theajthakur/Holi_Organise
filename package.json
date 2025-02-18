@@ -37,6 +37,7 @@
     "pdf-lib": "^1.17.1",
     "puppeteer": "^24.2.1",
     "qrcode": "^1.5.4",
-    "razorpay": "^2.9.5"
+    "razorpay": "^2.9.5",
+    "uuid": "^11.0.5"
   }
 }
