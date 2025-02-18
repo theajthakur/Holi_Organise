@@ -244,52 +244,58 @@
       }
 
       function getQrDetail(id) {
-        $.post("/admin/scan", { id: id }, (data) => {
-          $(".qr-result").text(data.message);
-          if (data.status == "success") {
-            $(".qr-result").removeClass("alert-danger");
-            $(".qr-result").addClass("alert-success");
+        $.post("/admin/scan", { id: id })
+          .done((data) => {
+            // Handle the successful response
+            $(".qr-result").text(data.message);
+            if (data.status === "success") {
+              $(".qr-result").removeClass("alert-danger");
+              $(".qr-result").addClass("alert-success");
 
-            $(".result-area .details")
-              .html(`<h3 class="pb-3 border-bottom mt-3">${
-              data.user?.name
-            } <span style="float: right">₹${data.payment?.amount}</span>
-                            </h3>
-                            <table class="table table-striped">
-                              <tr>
-                                <th>Mobile Number</th>
-                                <td>${data.user.mobileNumber}</td>
-                              </tr>
-                              <tr>
-                                <th>Age</th>
-                                <td>${data.user.age}</td>
-                              </tr>
-                              <tr>
-                                <th>College</th>
-                                <td>
-                                  ${data.user.college}
-                                </td>
-                              </tr>
-                              <tr>
-                                <th>Gender</th>
-                                <td>${data.user.gender}</td>
-                              </tr>
-                              <tr>
-                                <th>Package</th>
-                                <td>${data.user.packageName}</td>
-                              </tr>
-                              <tr>
-                                <th>Registered</th>
-                                <td>${new Date(
-                                  data.user.createdAt
-                                ).toLocaleDateString()}</td>
-                              </tr>
-                            </table>`);
-          } else {
+              $(".result-area .details").html(`
+          <h3 class="pb-3 border-bottom mt-3">
+            ${data.user?.name} <span style="float: right">₹${
+                data.payment?.amount
+              }</span>
+          </h3>
+          <table class="table table-striped">
+            <tr><th>Mobile Number</th><td>${data.user.mobileNumber}</td></tr>
+            <tr><th>Age</th><td>${data.user.age}</td></tr>
+            <tr><th>College</th><td>${data.user.college}</td></tr>
+            <tr><th>Gender</th><td>${data.user.gender}</td></tr>
+            <tr><th>Package</th><td>${data.user.packageName}</td></tr>
+            <tr><th>Registered</th><td>${new Date(
+              data.user.createdAt
+            ).toLocaleDateString()}</td></tr>
+          </table>`);
+            } else {
+              $(".qr-result").addClass("alert-danger");
+              $(".qr-result").removeClass("alert-success");
+            }
+          })
+          .fail((jqXHR, textStatus, errorThrown) => {
+            console.log(textStatus);
+            // Handle any HTTP errors (4xx, 5xx, etc.)
+            $(".qr-result").text(
+              "Error: Something went wrong. Please try again later."
+            );
             $(".qr-result").addClass("alert-danger");
             $(".qr-result").removeClass("alert-success");
-          }
-        });
+
+            // Optionally log the error for debugging purposes
+            console.error("Request failed: " + textStatus, errorThrown);
+
+            // Check the status code and show more details (e.g., for 4xx or 5xx errors)
+            if (jqXHR.status >= 400 && jqXHR.status < 500) {
+              $(".qr-result").text(
+                "Client error occurred. Please check the request and try again."
+              );
+            } else if (jqXHR.status >= 500) {
+              $(".qr-result").text(
+                "Server error occurred. Please try again later."
+              );
+            }
+          });
       }
 
       function stopQRScanner() {
