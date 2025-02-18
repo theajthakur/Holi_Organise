@@ -34,13 +34,13 @@
               </div>
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4">
             <div class="met-unit my-2">
               <h2 id="total_payment">₹ <%= payment %></h2>
               <p>Total Payment Collected</p>
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4">
             <div class="met-unit my-2">
               <h2 id="success_users">
                 <%= payments.filter((d) => d.status=="completed").length %>
@@ -48,15 +48,9 @@
               <p>Total Users Paid</p>
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4">
             <div class="met-unit my-2">
               <h2 id="qr_scans">0</h2>
-              <p>QR Code Scanned</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="met-unit my-2">
-              <h2>0</h2>
               <p>QR Code Scanned</p>
             </div>
           </div>
@@ -135,16 +129,25 @@
                 </div>
                 <div class="vjdynamic qr">
                   <div class="container content-container">
-                    <button
-                      id="scan-btn"
-                      class="btn btn-primary"
-                      onclick="toggleQRScanner()"
-                    >
-                      Start Scanning
-                    </button>
-                    <video id="video" autoplay style="display: none"></video>
-                    <canvas id="canvas" hidden></canvas>
-                    <p>Scanned QR Code: <span id="output"></span></p>
+                    <div class="scanner-area">
+                      <button
+                        id="scan-btn"
+                        class="btn btn-primary"
+                        onclick="toggleQRScanner()"
+                      >
+                        Start Scanning
+                      </button>
+                      <video id="video" autoplay style="display: none"></video>
+                      <canvas id="canvas" hidden></canvas>
+                    </div>
+                    <div class="result-area mt-5">
+                      <div class="container">
+                        <div class="rounded-lg shadow-lg p-3">
+                          <div class="alert qr-result my-3"></div>
+                          <div class="details"></div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -241,15 +244,62 @@
       }
 
       function getQrDetail(id) {
-        console.log(id);
+        $.post("/admin/scan", { id: id }, (data) => {
+          $(".qr-result").text(data.message);
+          if (data.status == "success") {
+            $(".qr-result").removeClass("alert-danger");
+            $(".qr-result").addClass("alert-success");
+
+            $(".result-area .details")
+              .html(`<h3 class="pb-3 border-bottom mt-3">${
+              data.user?.name
+            } <span style="float: right">₹${data.payment?.amount}</span>
+                            </h3>
+                            <table class="table table-striped">
+                              <tr>
+                                <th>Mobile Number</th>
+                                <td>${data.user.mobileNumber}</td>
+                              </tr>
+                              <tr>
+                                <th>Age</th>
+                                <td>${data.user.age}</td>
+                              </tr>
+                              <tr>
+                                <th>College</th>
+                                <td>
+                                  ${data.user.college}
+                                </td>
+                              </tr>
+                              <tr>
+                                <th>Gender</th>
+                                <td>${data.user.gender}</td>
+                              </tr>
+                              <tr>
+                                <th>Package</th>
+                                <td>${data.user.packageName}</td>
+                              </tr>
+                              <tr>
+                                <th>Registered</th>
+                                <td>${new Date(
+                                  data.user.createdAt
+                                ).toLocaleDateString()}</td>
+                              </tr>
+                            </table>`);
+          } else {
+            $(".qr-result").addClass("alert-danger");
+            $(".qr-result").removeClass("alert-success");
+          }
+        });
       }
 
       function stopQRScanner() {
+        const button = document.getElementById("scan-btn");
         if (stream) {
           stream.getTracks().forEach((track) => track.stop()); // Stop the camera
         }
         clearInterval(scanInterval);
         scanning = false;
+        button.innerText = "Start Scanning";
         $("video").hide();
       }
 

@@ -73,4 +73,30 @@ Router.get("/api/dashboard", async (req, res) => {
   }
 });
 
+Router.post("/scan", async (req, res) => {
+  const { id } = req.body;
+  if (!id)
+    return res.status(400).json({ status: "error", message: "No Id Found!" });
+
+  const user = await Pass.findById(id);
+  if (!user)
+    return res
+      .status(401)
+      .json({ status: "error", message: "Invalid Qr Detected!" });
+
+  const payment = await Payment.findOne({ userId: user._id });
+  if (!payment || !payment.status == "completed")
+    return res.status(402).json({
+      status: "error",
+      message: `No Payment found from ${user.name}`,
+    });
+
+  return res.status(200).json({
+    status: "success",
+    message: `${user.name} is verified`,
+    user: user,
+    payment: payment,
+  });
+});
+
 module.exports = Router;
