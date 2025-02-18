@@ -97,7 +97,7 @@
                           <th>College</th>
                           <th>Gender</th>
                           <th>Package</th>
-                          <th>Referrer</th>
+                          <th>Status</th>
                           <th>Payment</th>
                           <th>Date</th>
                         </tr>
@@ -116,7 +116,8 @@
                             d.userId.equals(user._id))?.status %>
                           </td>
                           <td>
-                            <%= payments.find((d) => ( ||
+                            <%= payments.find((d) =>
+                            ((d.userId.equals(user._id)) ||
                             (d.userId.equals(user.leader))))?.amount %>
                           </td>
                           <td>
