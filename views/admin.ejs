@@ -244,10 +244,13 @@
       }
 
       function getQrDetail(id) {
+        $(".result-area .details").html("<h5>Loading.....</h5>");
+        $(".qr-result").hide();
         $.post("/admin/scan", { id: id })
           .done((data) => {
-            // Handle the successful response
             $(".qr-result").text(data.message);
+            $(".qr-result").show();
+            $(".result-area .details").empty();
             if (data.status === "success") {
               $(".qr-result").removeClass("alert-danger");
               $(".qr-result").addClass("alert-success");

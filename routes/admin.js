@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const express = require("express");
 const Router = express.Router();
 const bcrypt = require("bcrypt");
@@ -75,25 +76,40 @@ Router.get("/api/dashboard", async (req, res) => {
 
 Router.post("/scan", async (req, res) => {
   const { id } = req.body;
-  if (!id) return res.json({ status: "error", message: "No Id Found!" });
 
-  const user = await Pass.findById(id);
-  if (!user)
-    return res.json({ status: "error", message: "Invalid Qr Detected!" });
+  try {
+    if (!id) {
+      return res.json({ status: "error", message: "No Id Found!" });
+    }
 
-  const payment = await Payment.findOne({ userId: user._id });
-  if (!payment || !payment.status == "completed")
-    return res.json({
-      status: "error",
-      message: `No Payment found from ${user.name}`,
+    // Check if the provided ID is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.json({ status: "error", message: "Invalid Ticket Code!" });
+    }
+
+    const user = await Pass.findById(id);
+    if (!user) {
+      return res.json({ status: "error", message: "Invalid Qr Detected!" });
+    }
+
+    const payment = await Payment.findOne({ userId: user._id });
+    if (!payment || payment.status !== "completed") {
+      return res.json({
+        status: "error",
+        message: `No Payment found from ${user.name}`,
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: `${user.name} is verified`,
+      user: user,
+      payment: payment,
     });
-
-  return res.status(200).json({
-    status: "success",
-    message: `${user.name} is verified`,
-    user: user,
-    payment: payment,
-  });
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: "error", message: `Data is manipulated: ${id}` });
+  }
 });
 
 module.exports = Router;
