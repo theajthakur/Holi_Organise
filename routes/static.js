@@ -80,8 +80,8 @@ router.get("/qr/generate/:data", async (req, res) => {
     {
       type: "png",
       margin: 1,
-      width: 200,
-      height: 200,
+      width: 400,
+      height: 400,
       scale: 10,
     },
     (err, buffer) => {

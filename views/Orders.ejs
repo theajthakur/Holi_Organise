@@ -93,6 +93,10 @@
                  <div class="ticket-interior">
                       <div class="ticket-header">
                         <h3>RANG TARANG</h3>
+                        <div class="ml-auto">
+                          <p class="lead small m-0"><span class="fa fa-phone"></span> 8292295003</p>  
+                          <p class="lead small m-0"><span class="fa fa-envelope"></span> instamoentertainment@gmail.com</p>  
+                        </div>
                       </div>
                       <div class="ticket-body">
                         <div class="row">
@@ -117,9 +121,12 @@
                                     </div>  
                                 </div>    
                             </div>
-                            <div class="col-12">
-                              <p class="mt-2 lead m-0 text-center" style="font-size: 0.7rem;">
+                            <div class="col-12 mt-3">
+                              <p class="mt-2 lead m-0 pb-2 text-center border-bottom" style="font-size: 0.7rem;">
                                 Attendees must carry a valid ID proof, and ticket verification will be done at entry
+                              </p>
+                              <p class="mt-2 lead m-0 text-center" style="font-size: 0.7rem;">
+                                <b><span class="fa fa-map-marker pr-2"></span> Vivaan Farms, Sector 150 Noida</b>
                               </p>
                             </div>
                         </div>
@@ -133,6 +140,7 @@
                   $(this).hide(); // Hide button before capturing
                   const uid = $(this).data("id");
                   if (!uid) return alert("No Id found!");
+                  $(`.ticket-unit#${uid}`).addClass("ticket-prePrint");
 
                   let div = document.getElementById(uid);
 
@@ -147,6 +155,7 @@
                     link.download = `pass_${uid}.png`;
                     link.click();
                     $(this).show(); // Show button again after capture
+                    $(`.ticket-unit#${uid}`).removeClass("ticket-prePrint");
                   });
                 });
               }
@@ -207,12 +216,18 @@
       top: calc(50% - 15px);
     }
 
+    .ticket-unit .ticket-header {
+      margin-bottom: 10px;
+      border-bottom: 1px dashed white;
+      display: flex;
+      width: 100%;
+      align-items: center;
+    }
+
     .ticket-unit .ticket-header h3 {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding-bottom: 10px;
-      border-bottom: 1px dashed white;
       font-size: 1.2rem;
     }
 
@@ -231,6 +246,10 @@
       .img-container {
         float: none;
       }
+    }
+
+    .ticket-prePrint {
+      width: 700px;
     }
   </style>
 </html>
