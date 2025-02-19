@@ -17,6 +17,10 @@
         position: sticky;
         top: 0;
       }
+
+      .details.bgdanger {
+        background: #ff000017;
+      }
     </style>
   </head>
   <body>
@@ -145,7 +149,7 @@
                       <video id="video" autoplay style="display: none"></video>
                       <canvas id="canvas" hidden></canvas>
                     </div>
-                    <div class="result-area mt-5">
+                    <div class="result-area mt-5" style="display: none">
                       <div class="container">
                         <div class="rounded-lg shadow-lg p-3">
                           <div class="alert qr-result my-3"></div>
@@ -254,6 +258,7 @@
         const video = document.getElementById("video");
         const canvas = document.getElementById("canvas");
         const context = canvas.getContext("2d");
+        $(".result-area").hide();
 
         try {
           stream = await navigator.mediaDevices.getUserMedia({
@@ -294,6 +299,7 @@
       }
 
       function getQrDetail(id) {
+        $(".result-area .details").removeClass("bgdanger");
         $(".result-area .details").html("<h5>Loading.....</h5>");
         $(".qr-result").hide();
         $.post("/admin/scan", { id: id })
@@ -306,21 +312,48 @@
               $(".qr-result").addClass("alert-success");
 
               $(".result-area .details").html(`
-          <h3 class="pb-3 border-bottom mt-3">
-            ${data.user?.name} <span style="float: right">₹${
+                  <h3 class="pb-3 border-bottom mt-3">
+                    ${data.user?.name} <span style="float: right">₹${
                 data.payment?.amount
               }</span>
-          </h3>
-          <table class="table table-striped">
-            <tr><th>Mobile Number</th><td>${data.user.mobileNumber}</td></tr>
-            <tr><th>Age</th><td>${data.user.age}</td></tr>
-            <tr><th>College</th><td>${data.user.college}</td></tr>
-            <tr><th>Gender</th><td>${data.user.gender}</td></tr>
-            <tr><th>Package</th><td>${data.user.packageName}</td></tr>
-            <tr><th>Registered</th><td>${new Date(
-              data.user.createdAt
-            ).toLocaleDateString()}</td></tr>
-          </table>`);
+                  </h3>
+                  <table class="table table-striped">
+                    <tr><th>Mobile Number</th><td>${
+                      data.user.mobileNumber
+                    }</td></tr>
+                    <tr><th>Age</th><td>${data.user.age}</td></tr>
+                    <tr><th>College</th><td>${data.user.college}</td></tr>
+                    <tr><th>Gender</th><td>${data.user.gender}</td></tr>
+                    <tr><th>Package</th><td>${data.user.packageName}</td></tr>
+                    <tr><th>Registered</th><td>${new Date(
+                      data.user.createdAt
+                    ).toLocaleDateString()}</td></tr>
+                  </table>
+              `);
+
+              if (data.qrHistory.length > 0) {
+                $(".result-area .details").addClass("bgdanger");
+                $(".result-area .details").append(
+                  `<p class="lead text-danger text-center">${data.user?.name} Scanned ${data.qrHistory.length} times already!</p>`
+                );
+                $(".result-area .details").append(
+                  `<table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Time</th>
+                        <th>Admin</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${data.qrHistory
+                        .map((dd) => {
+                          return `<tr><td>${dd.createdAt}</td><td>${dd.admin}</td></tr>`;
+                        })
+                        .join("")}
+                    </tbody>
+                  </table>`
+                );
+              }
             } else {
               $(".qr-result").addClass("alert-danger");
               $(".qr-result").removeClass("alert-success");
@@ -359,6 +392,7 @@
         clearInterval(scanInterval);
         scanning = false;
         button.innerText = "Start Scanning";
+        $(".result-area").show();
         $("video").hide();
       }
 

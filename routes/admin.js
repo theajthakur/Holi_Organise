@@ -7,6 +7,7 @@ const Admin = require("../models/Admin");
 const Pass = require("../models/Pass");
 const Payment = require("../models/Payment");
 const Referral = require("../models/Referral");
+const QRHistory = require("../models/QRHistory");
 const { v4: uuidv4 } = require("uuid");
 
 Router.get("/", async (req, res) => {
@@ -93,6 +94,13 @@ Router.post("/scan", async (req, res) => {
       return res.json({ status: "error", message: "Invalid Qr Detected!" });
     }
 
+    const qrHistory = await QRHistory.find({ userId: user._id });
+
+    await QRHistory.create({
+      userId: user._id,
+      admin: req.user?.name,
+    });
+
     const payment = await Payment.findOne({ userId: user._id });
     if (!payment || payment.status !== "completed") {
       return res.json({
@@ -106,6 +114,7 @@ Router.post("/scan", async (req, res) => {
       message: `${user.name} is verified`,
       user: user,
       payment: payment,
+      qrHistory: qrHistory,
     });
   } catch (error) {
     console.log(error);
