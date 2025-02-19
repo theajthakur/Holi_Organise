@@ -166,22 +166,25 @@ router.post("/refer-status", async (req, res) => {
   //       "No Referral Found, Share link with your friend to get Rewards and many more!",
   //   });
 
-  let amount = 0;
   let successUsers = 0;
+  let earning = 0;
+  let profitFactor = 0.05;
 
   refered.forEach(async (unit) => {
+    refersUnit++;
+    successUsers++;
     const success = await Payment.findOne({
       status: "completed",
       userId: unit._id,
     });
-    amount += success.amount;
-    successUsers++;
+    if (successUsers > 10) profitFactor = 0.1;
+    earning += success.amount * profitFactor;
   });
 
   return res.json({
     status: "success",
     message: "Fetched Successfully!",
-    earning: (amount * 0.05).toFixed(2),
+    earning: earning.toFixed(2),
     totalUsers: refered.length,
     paidUsers: successUsers,
   });
