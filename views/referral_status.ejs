@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-4GS47J2F2H"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-4GS47J2F2H");
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Track Your Referrals</title>
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="assets/css/bootstrap.min.css"
+    />
+
+    <link rel="stylesheet" href="/assets/css/animate.css" />
+
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="icon" href="/holi_event_50.png" />
+    <meta property="og:image" content="/holi_event_200.png" />
+  </head>
+  <body>
+    <div class="full-body">
+      <div class="header pb-5">
+        <div
+          class="d-inline-flex align-items-center justify-content-center text-center w-100"
+        >
+          <div>
+            <a href="/">
+              <img
+                alt="Logo Main"
+                src="/assets/images/logo_text.png"
+                width="100px"
+              />
+            </a>
+            <h1 class="p-0 m-0">Track your Referrals</h1>
+          </div>
+        </div>
+      </div>
+      <div class="mt-5 bg-white py-5">
+        <div class="container">
+          <div class="vh-100 justify-content-center w-100 align-items-center">
+            <div class="p-3 shadow-lg">
+              <form class="track-refer">
+                <!-- Link input field -->
+                <div class="mb-3">
+                  <label for="link" class="form-label">Link</label>
+                  <input
+                    type="url"
+                    class="form-control"
+                    id="link"
+                    placeholder="Enter URL"
+                  />
+                </div>
+
+                <!-- Mobile input field -->
+                <div class="mb-3">
+                  <label for="mobile" class="form-label">Mobile</label>
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="mobile"
+                    placeholder="Enter mobile number"
+                  />
+                </div>
+
+                <div class="my-3">
+                  <div
+                    class="g-recaptcha"
+                    data-sitekey="<%= captchaKey %>"
+                    data-callback="onCaptchaSuccess"
+                  ></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+              <div class="my-3 alert statusBox"></div>
+              <p class="lead successBox" style="display: none"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      body {
+        background: url(assets/images/banner_bg.jpg) fixed;
+        background-size: cover;
+        overflow-x: hidden;
+      }
+
+      .header {
+        background: white;
+        text-transform: uppercase;
+        font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+        padding: 2rem 0;
+        letter-spacing: 2px;
+      }
+
+      .main-body {
+        margin-top: 5rem;
+        background-color: white;
+      }
+    </style>
+
+    <script src="/assets/js/jquery-2.1.0.min.js"></script>
+    <script>
+      let ready = true;
+      function onCaptchaSuccess(token) {
+        if (!ready) return;
+        $("form.track-refer").submit(() => {
+          $(".successBox").hide();
+          ready = false;
+          $(".statusBox").hide();
+          const link = $(".track-refer #link").val();
+          const mobile = $(".track-refer #mobile").val();
+          if (!link || !mobile || !token) {
+            alert("Invalid Parameters!");
+          } else {
+            $.post(
+              "/refer-status",
+              {
+                link: link,
+                mobile: mobile,
+                token: token,
+              },
+              (data) => {
+                ready = true;
+                $(".statusBox").html(data.message);
+                $(".statusBox").show();
+                if (data.status == "success") {
+                  $(".successBox").show();
+                  $(".statusBox").removeClass("alert-danger");
+                  $(".statusBox").addClass("alert-success");
+                  $(".successBox").html(
+                    `<p class="lead text-danger my-3">You have earned <b>${data.earning}</b> from <b>${data.paidUsers}</b> successfull purchases</p>`
+                  );
+                } else {
+                  $(".statusBox").addClass("alert-danger");
+                  $(".statusBox").removeClass("alert-success");
+                }
+              }
+            );
+          }
+          return false;
+        });
+      }
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  </body>
+</html>

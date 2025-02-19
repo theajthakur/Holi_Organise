@@ -3,6 +3,7 @@ const QRCode = require("qrcode");
 const path = require("path");
 const Pass = require("../models/Pass");
 const Payment = require("../models/Payment");
+const Referral = require("../models/Referral");
 const router = express.Router();
 
 require("dotenv").config();
@@ -124,6 +125,72 @@ router.get("/vj/logs", (req, res) => {
 
 router.get("/logout", (req, res) => {
   res.cookie("auth_token", "").redirect("/");
+});
+
+router.post("/refer-status", async (req, res) => {
+  const { mobile, link, token } = req.body;
+  if (!mobile || !link || !token)
+    return res.json({ status: "error", message: "Invalid parameters!" });
+
+  const gcapr = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+    method: "POST",
+    body: new URLSearchParams({
+      secret: process.env.CAPTCHA_SECRET_KEY,
+      response: token,
+    }),
+  });
+
+  if (!gcapr.ok) {
+    console.error("Error during reCAPTCHA verification:", gcapr.statusText);
+    return;
+  }
+
+  const result = await gcapr.json();
+  if (!result.success)
+    return res.json({ status: "error", message: "Captcha Validation Failed!" });
+
+  const referral = link.split("=")[1];
+  if (!referral)
+    return res.json({ status: "error", message: "Invalid Referral Link" });
+  const affilate = await Referral.find({ code: referral, mobile: mobile });
+  if (!affilate)
+    return res.json({
+      status: "error",
+      message: "Invalid link or Mobile Number",
+    });
+  const refered = await Pass.find({ referrer: referral });
+  // if (refered.length === 0)
+  //   return res.json({
+  //     status: "error",
+  //     message:
+  //       "No Referral Found, Share link with your friend to get Rewards and many more!",
+  //   });
+
+  let amount = 0;
+  let successUsers = 0;
+
+  refered.forEach(async (unit) => {
+    const success = await Payment.findOne({
+      status: "completed",
+      userId: unit._id,
+    });
+    amount += success.amount;
+    successUsers++;
+  });
+
+  return res.json({
+    status: "success",
+    message: "Fetched Successfully!",
+    earning: (amount * 0.05).toFixed(2),
+    totalUsers: refered.length,
+    paidUsers: successUsers,
+  });
+});
+
+router.get("/refer-status", (req, res) => {
+  return res.render("referral_status", {
+    captchaKey: process.env.CAPTCHA_SITE_KEY,
+  });
 });
 
 module.exports = router;
