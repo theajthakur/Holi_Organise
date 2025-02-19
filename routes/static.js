@@ -128,66 +128,79 @@ router.get("/logout", (req, res) => {
 });
 
 router.post("/refer-status", async (req, res) => {
-  const { mobile, link, token } = req.body;
-  if (!mobile || !link || !token)
-    return res.json({ status: "error", message: "Invalid parameters!" });
+  try {
+    const { mobile, link, token } = req.body;
+    if (!mobile || !link || !token)
+      return res.json({ status: "error", message: "Invalid parameters!" });
 
-  const gcapr = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-    method: "POST",
-    body: new URLSearchParams({
-      secret: process.env.CAPTCHA_SECRET_KEY,
-      response: token,
-    }),
-  });
+    const gcapr = await fetch(
+      "https://www.google.com/recaptcha/api/siteverify",
+      {
+        method: "POST",
+        body: new URLSearchParams({
+          secret: process.env.CAPTCHA_SECRET_KEY,
+          response: token,
+        }),
+      }
+    );
 
-  if (!gcapr.ok) {
-    console.error("Error during reCAPTCHA verification:", gcapr.statusText);
-    return;
-  }
+    if (!gcapr.ok) {
+      console.error("Error during reCAPTCHA verification:", gcapr.statusText);
+      return;
+    }
 
-  const result = await gcapr.json();
-  if (!result.success)
-    return res.json({ status: "error", message: "Captcha Validation Failed!" });
+    const result = await gcapr.json();
+    if (!result.success)
+      return res.json({
+        status: "error",
+        message: "Captcha Validation Failed!",
+      });
 
-  const referral = link.split("=")[1];
-  if (!referral)
-    return res.json({ status: "error", message: "Invalid Referral Link" });
-  const affilate = await Referral.find({ code: referral, mobile: mobile });
-  if (!affilate)
+    const referral = link.split("=")[1];
+    if (!referral)
+      return res.json({ status: "error", message: "Invalid Referral Link" });
+    const affilate = await Referral.find({ code: referral, mobile: mobile });
+    if (!affilate)
+      return res.json({
+        status: "error",
+        message: "Invalid link or Mobile Number",
+      });
+    const refered = await Pass.find({ referrer: referral });
+    // if (refered.length === 0)
+    //   return res.json({
+    //     status: "error",
+    //     message:
+    //       "No Referral Found, Share link with your friend to get Rewards and many more!",
+    //   });
+
+    let successUsers = 0;
+    let earning = 0;
+    let profitFactor = 0.05;
+
+    refered.forEach(async (unit) => {
+      refersUnit++;
+      successUsers++;
+      const success = await Payment.findOne({
+        status: "completed",
+        userId: unit._id,
+      });
+      if (success) {
+        if (successUsers > 20) profitFactor = 0.1;
+        earning += success.amount * profitFactor;
+      }
+    });
+
     return res.json({
-      status: "error",
-      message: "Invalid link or Mobile Number",
+      status: "success",
+      message: "Fetched Successfully!",
+      earning: earning.toFixed(2),
+      totalUsers: refered.length,
+      paidUsers: successUsers,
     });
-  const refered = await Pass.find({ referrer: referral });
-  // if (refered.length === 0)
-  //   return res.json({
-  //     status: "error",
-  //     message:
-  //       "No Referral Found, Share link with your friend to get Rewards and many more!",
-  //   });
-
-  let successUsers = 0;
-  let earning = 0;
-  let profitFactor = 0.05;
-
-  refered.forEach(async (unit) => {
-    refersUnit++;
-    successUsers++;
-    const success = await Payment.findOne({
-      status: "completed",
-      userId: unit._id,
-    });
-    if (successUsers > 10) profitFactor = 0.1;
-    earning += success.amount * profitFactor;
-  });
-
-  return res.json({
-    status: "success",
-    message: "Fetched Successfully!",
-    earning: earning.toFixed(2),
-    totalUsers: refered.length,
-    paidUsers: successUsers,
-  });
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: "error", message: "Server Error" });
+  }
 });
 
 router.get("/refer-status", (req, res) => {
