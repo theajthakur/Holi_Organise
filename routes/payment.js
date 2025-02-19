@@ -52,14 +52,14 @@ router.post("/create-order", async (req, res) => {
       calcAmount = 499;
       break;
   }
-
+  leader.referrer = referral;
   const leaderData = await Pass.create(leader);
+  console.log(leaderData);
   if (ticketCount > 1) {
     for (let i = 1; i < ticketCount; i++) {
       await Pass.create({
         ...data[i],
         leader: leaderData._id,
-        referrer: referral,
       });
     }
   }
