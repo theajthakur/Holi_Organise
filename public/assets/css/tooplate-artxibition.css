@@ -98,6 +98,19 @@ figcaption {
   outline: 0;
 }
 
+.cautions marquee ul {
+  list-style: none;
+}
+
+.cautions marquee ul li {
+  display: inline-block;
+  margin: 0 30px;
+}
+
+.cautions {
+  background: linear-gradient(45deg, #ffff0063, #009bff38);
+}
+
 .clearfix:after {
   content: ".";
   display: block;
