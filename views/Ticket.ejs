@@ -588,7 +588,7 @@
           rzp.open();
         } catch (error) {
           console.error(error);
-          alert("Something went wrong. Please try again.");
+          alert("Error: " + error.message);
           $btn.prop("disabled", false).html(originalBtnText);
         }
       }
@@ -599,7 +599,7 @@
         if (currentForm > unit) {
           $(".person_count").remove();
         }
-        $(".nextbtn").click(() => {
+        $(".nextbtn").off("click").click(() => {
           const name = $("#name").val();
           const mobile = $("#mobile").val();
           const age = $("#age").val();
@@ -626,20 +626,21 @@
           userData.push(tmp);
 
           renderTicketList();
-          if (currentForm++ == unit) {
+          if (currentForm == unit) {
             handlePayment($(".nextbtn"));
           } else {
+            currentForm++;
+            $("#cccount").text(currentForm);
             $(".form-unit").hide();
             setTimeout(() => {
               $(".form-unit").show();
             }, 100);
           }
-          $("#cccount").text(currentForm);
         });
       }
       $(document).ready(() => {
         let currentPage = 1;
-        let packagePrice = 499;
+        packagePrice = 499;
 
         const showPage = (currentPage) => {
           const clsPfx = ".ticket-form .internal-container.package-choose";
