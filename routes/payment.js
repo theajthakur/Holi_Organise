@@ -9,7 +9,7 @@ const router = express.Router();
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
+  key_secret: process.env.RAZORPAY_KEY_SECRET || "empty",
 });
 
 router.post("/create-order", async (req, res) => {
@@ -54,15 +54,8 @@ router.post("/create-order", async (req, res) => {
   }
   leader.referrer = referral;
   const leaderData = await Pass.create(leader);
-  console.log(leaderData);
-  if (ticketCount > 1) {
-    for (let i = 1; i < ticketCount; i++) {
-      await Pass.create({
-        ...data[i],
-        leader: leaderData._id,
-      });
-    }
-  }
+  console.log("Leader created:", leaderData._id);
+
   const options = {
     amount: calcAmount * 100,
     currency: "INR",
@@ -70,15 +63,29 @@ router.post("/create-order", async (req, res) => {
   };
 
   try {
-    const order = await razorpay.orders.create(options);
+    // Perform bulk pass creation and Razorpay order creation in parallel
+    const [othersData, order] = await Promise.all([
+      ticketCount > 1
+        ? Pass.insertMany(
+            data.slice(1).map((item) => ({
+              ...item,
+              leader: leaderData._id,
+            }))
+          )
+        : Promise.resolve([]),
+      razorpay.orders.create(options),
+    ]);
+
+    // Track payment transaction
     await Payment.create({
       userId: leaderData._id,
       txnid: order.id,
       amount: amount,
     });
+
     res.json(order);
   } catch (error) {
-    console.error(error);
+    console.error("Order Creation Error:", error);
     res.status(500).send("Error creating order");
   }
 });
@@ -87,6 +94,12 @@ router.post("/create-order", async (req, res) => {
 router.post("/verify-payment", async (req, res) => {
   const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
     req.body;
+
+  // If secret is missing, bypass verification for test mode as requested
+  if (!process.env.RAZORPAY_KEY_SECRET) {
+    console.log("RAZORPAY_KEY_SECRET missing, bypassing verification.");
+    return res.json({ success: true, message: "Payment Verified (Test Mode)" });
+  }
 
   const generated_signature = crypto
     .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)

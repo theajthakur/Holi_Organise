@@ -53,7 +53,6 @@
       <div class="main-body">
         <div class="container py-5">
           <div class="row">
-            <input type="hidden" id="sitekey" value="<%= captchaKey %>" />
             <div
               class="col-lg-4 mb-5 animate__animated animate__backInLeft animate__delay-1s"
             >
@@ -269,20 +268,6 @@
                         </div>
                       </div>
 
-                      <div class="row final-submit" style="display: none">
-                        <div class="w-100 justify-content-center d-inline-flex">
-                          <div id="mcaptcha"></div>
-                        </div>
-                        <div class="col-sm-12 my-2 text-center">
-                          <button
-                            class="w-50 btn btn-primary sbmtbtn"
-                            style="display: none"
-                            id="payButton"
-                          >
-                            Submit
-                          </button>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -511,17 +496,101 @@
                   </div>`);
         });
       };
-      function captchaChecked() {
-        $(".sbmtbtn").fadeIn();
-      }
-      function showFinalSubmit() {
-        $(".nextbtn").hide();
-        $(".final-submit").show();
-        $(".variable_form").hide();
-        grecaptcha.render("mcaptcha", {
-          sitekey: $("#sitekey").val(),
-          callback: "captchaChecked",
-        });
+      async function handlePayment($btn) {
+        if (userData.length == 0) {
+          alert("No Cart in Ticket!");
+          return false;
+        }
+        const originalBtnText = $btn.html();
+
+        // Visual Feedback: Disable button and show loading
+        $btn.prop("disabled", true).text("Generating Order...");
+
+        const referral = localStorage.getItem("referral");
+        try {
+          const response = await fetch("/payment/create-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              amount: packagePrice,
+              data: userData,
+              referral: referral,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || "Order creation failed");
+          }
+
+          const order = await response.json();
+          var options = {
+            key: "<%= razorpayKeyId %>",
+            amount: order.amount,
+            currency: "INR",
+            name: "Rang Tarang",
+            description: "Holi Party Ticket",
+            order_id: order.id,
+            handler: async function (response) {
+              console.log(response);
+              // Keep button disabled/loading during verification
+              $btn.text("Verifying Payment...");
+
+              const verifyRes = await fetch("/payment/verify-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(response),
+              });
+
+              const result = await verifyRes.json();
+              let storedOrders = localStorage.getItem("storedOrders");
+              storedOrders = storedOrders ? JSON.parse(storedOrders) : [];
+              storedOrders.push(order.id);
+              localStorage.setItem(
+                "storedOrders",
+                JSON.stringify(storedOrders)
+              );
+
+              if (result.success) {
+                $.post(
+                  "/payment/checkOrder",
+                  { orderId: order.id },
+                  (data) => {
+                    if (data.status == "success") {
+                      window.location.href = "/orders";
+                    } else {
+                      alert(data.message);
+                      $btn.prop("disabled", false).html(originalBtnText);
+                    }
+                  }
+                );
+              } else {
+                alert("Payment Failed!");
+                window.location.href = "/tickets";
+              }
+            },
+            modal: {
+              ondismiss: function () {
+                // Restore button if modal is closed
+                $btn.prop("disabled", false).html(originalBtnText);
+              },
+            },
+            prefill: {
+              name: userData[0].name,
+              contact: userData[0].mobileNumber,
+            },
+            theme: {
+              color: "#3399cc",
+            },
+          };
+
+          var rzp = new Razorpay(options);
+          rzp.open();
+        } catch (error) {
+          console.error(error);
+          alert("Something went wrong. Please try again.");
+          $btn.prop("disabled", false).html(originalBtnText);
+        }
       }
       function renderForm(unit) {
         $(".person_count").html(
@@ -558,7 +627,7 @@
 
           renderTicketList();
           if (currentForm++ == unit) {
-            showFinalSubmit();
+            handlePayment($(".nextbtn"));
           } else {
             $(".form-unit").hide();
             setTimeout(() => {
@@ -609,75 +678,7 @@
           showPage(++currentPage);
         });
 
-        $(".sbmtbtn").click(async () => {
-          if (userData.length == 0) {
-            alert("No Cart in Ticket!");
-            return false;
-          }
-          $("#mcaptcha").hide();
-          const referral = localStorage.getItem("referral");
-          const response = await fetch("/payment/create-order", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              amount: packagePrice,
-              data: userData,
-              referral: referral,
-            }),
-          });
-
-          const order = await response.json();
-          var options = {
-            key: "rzp_live_n5r0eMfuX4obUf",
-            amount: order.amount,
-            currency: "INR",
-            name: "Rang Tarang",
-            description: "Holi Party Ticket",
-            order_id: order.id,
-            handler: async function (response) {
-              console.log(response);
-              const verifyRes = await fetch("/payment/verify-payment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(response),
-              });
-
-              const result = await verifyRes.json();
-              let storedOrders = localStorage.getItem("storedOrders");
-              storedOrders = storedOrders ? JSON.parse(storedOrders) : [];
-              storedOrders.push(order.id);
-              localStorage.setItem(
-                "storedOrders",
-                JSON.stringify(storedOrders)
-              );
-
-              if (result.success) {
-                $.post("/payment/checkOrder", { orderId: order.id }, (data) => {
-                  if (data.status == "success") {
-                    window.location.href = "/orders";
-                  } else {
-                    alert(data.message);
-                  }
-                });
-              } else {
-                alert("Payment Failed!");
-                window.location.href = "/tickets";
-              }
-            },
-            prefill: {
-              name: userData[0].name,
-              contact: userData[0].mobileNumber,
-            },
-            theme: {
-              color: "#3399cc",
-            },
-          };
-
-          var rzp = new Razorpay(options);
-          rzp.open();
-        });
       });
     </script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback"></script>
   </body>
 </html>

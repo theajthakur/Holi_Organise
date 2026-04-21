@@ -99,14 +99,6 @@
                   />
                 </div>
 
-                <div class="my-3">
-                  <div
-                    class="g-recaptcha"
-                    data-sitekey="<%= captchaKey %>"
-                    data-callback="onCaptchaSuccess"
-                  ></div>
-                </div>
-
                 <button type="submit" class="btn btn-primary">Submit</button>
               </form>
               <div class="my-3 alert statusBox"></div>
@@ -141,23 +133,23 @@
     <script src="/assets/js/jquery-2.1.0.min.js"></script>
     <script>
       let ready = true;
-      function onCaptchaSuccess(token) {
-        if (!ready) return;
+      $(document).ready(() => {
         $("form.track-refer").submit(() => {
+          if (!ready) return false;
           $(".successBox").hide();
           ready = false;
           $(".statusBox").hide();
           const link = $(".track-refer #link").val();
           const mobile = $(".track-refer #mobile").val();
-          if (!link || !mobile || !token) {
+          if (!link || !mobile) {
             alert("Invalid Parameters!");
+            ready = true;
           } else {
             $.post(
               "/refer-status",
               {
                 link: link,
                 mobile: mobile,
-                token: token,
               },
               (data) => {
                 ready = true;
@@ -179,8 +171,7 @@
           }
           return false;
         });
-      }
+      });
     </script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   </body>
 </html>

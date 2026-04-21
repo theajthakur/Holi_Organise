@@ -18,7 +18,7 @@ router.get("/about", (req, res) => {
 
 router.get("/tickets", (req, res) => {
   res.status(200).render("Ticket", {
-    captchaKey: process.env.CAPTCHA_SITE_KEY,
+    razorpayKeyId: process.env.RAZORPAY_KEY_ID,
   });
 });
 
@@ -129,32 +129,9 @@ router.get("/logout", (req, res) => {
 
 router.post("/refer-status", async (req, res) => {
   try {
-    const { mobile, link, token } = req.body;
-    if (!mobile || !link || !token)
+    const { mobile, link} = req.body;
+    if (!mobile || !link)
       return res.json({ status: "error", message: "Invalid parameters!" });
-
-    const gcapr = await fetch(
-      "https://www.google.com/recaptcha/api/siteverify",
-      {
-        method: "POST",
-        body: new URLSearchParams({
-          secret: process.env.CAPTCHA_SECRET_KEY,
-          response: token,
-        }),
-      }
-    );
-
-    if (!gcapr.ok) {
-      console.error("Error during reCAPTCHA verification:", gcapr.statusText);
-      return;
-    }
-
-    const result = await gcapr.json();
-    if (!result.success)
-      return res.json({
-        status: "error",
-        message: "Captcha Validation Failed!",
-      });
 
     const referral = link.split("=")[1];
     if (!referral)
@@ -204,9 +181,7 @@ router.post("/refer-status", async (req, res) => {
 });
 
 router.get("/refer-status", (req, res) => {
-  return res.render("referral_status", {
-    captchaKey: process.env.CAPTCHA_SITE_KEY,
-  });
+  return res.render("referral_status");
 });
 
 module.exports = router;
