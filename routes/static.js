@@ -8,6 +8,10 @@ const router = express.Router();
 
 require("dotenv").config();
 
+router.get("/api", (req, res) => {
+  return res.json({ status: "success", message: "The API is working correctly" });
+});
+
 router.get("/", (req, res) => {
   res.render("index");
 });
